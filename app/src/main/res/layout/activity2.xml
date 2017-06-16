@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.example.kouram.usetmap.MainActivity">
+    tools:context="com.example.kouram.activitystudy.Activity2Activity">
 
     <LinearLayout
         android:layout_width="match_parent"
