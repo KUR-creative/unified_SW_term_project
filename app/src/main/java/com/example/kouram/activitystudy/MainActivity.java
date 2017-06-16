@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             // call other activity!
-            Intent intent = new Intent(MainActivity.this, Activity2Activity.class);
+            Intent intent = new Intent(MainActivity.this, TMapActivity.class);
             startActivity(intent);
             finish(); // 이제 타이틀로는 돌아가지 않음.
             }

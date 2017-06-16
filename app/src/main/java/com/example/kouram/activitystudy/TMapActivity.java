@@ -14,7 +14,7 @@ import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
-public class Activity2Activity extends AppCompatActivity {
+public class TMapActivity extends AppCompatActivity {
 
     private TMapView mapView;
     private Button addMarkerBtn;
@@ -58,7 +58,7 @@ public class Activity2Activity extends AppCompatActivity {
             }
         });
 
-        final Activity2Activity context = this;
+        final TMapActivity context = this;
         routeBtn = (Button)findViewById(R.id.get_route_btn);
         routeBtn.setOnClickListener(new View.OnClickListener(){
             @Override

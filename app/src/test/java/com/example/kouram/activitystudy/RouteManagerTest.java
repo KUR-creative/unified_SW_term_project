@@ -27,8 +27,13 @@ public class RouteManagerTest {
     public void If_path_job_is_end_then_You_can_create_new_path(){
         RouteManager rm = new RouteManager();
         rm.createNewRoute();
+        assertTrue(rm.hasCurrentWorkingRoute());
+
         rm.discardCurrentRoute();
+        assertFalse(rm.hasCurrentWorkingRoute());
+
         rm.createNewRoute();
+        assertTrue(rm.hasCurrentWorkingRoute());
     }
 
     @Test
@@ -46,5 +51,30 @@ public class RouteManagerTest {
         rm.createNewRoute();
         TMapPoint point = new TMapPoint(1.0, 2.0);
         rm.addPoint(point);
+    }
+
+    @Test
+    public void we_can_get_number_of_point_in_route(){
+        //given:
+        RouteManager rm = new RouteManager();
+        rm.createNewRoute();
+        //when:
+        TMapPoint point = new TMapPoint(1.0, 2.0);
+        rm.addPoint(point);
+        //then:
+        assertEquals(rm.getNumOfPointInRoute(), 1);
+
+        // and when add more points
+        rm.addPoint(point);
+        rm.addPoint(point);
+        rm.addPoint(point);
+        rm.addPoint(point);
+        // then
+        assertEquals(rm.getNumOfPointInRoute(), 5);
+
+        // and when discard the route
+        rm.discardCurrentRoute();
+        // then # of points in route = 0
+        assertEquals(rm.getNumOfPointInRoute(), 0);
     }
 }

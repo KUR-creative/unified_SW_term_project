@@ -3,7 +3,6 @@ package com.example.kouram.activitystudy;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
-import com.skp.Tmap.TMapView;
 
 import java.util.ArrayList;
 
@@ -25,6 +24,7 @@ public class RouteManager {
 
     public void discardCurrentRoute() {
         hasCurrentRoute = false;
+        route.clear();
     }
 
     public void addPoint(TMapPoint point) {
@@ -34,7 +34,7 @@ public class RouteManager {
         route.add(point);
     }
 
-    public void getAndDisplayPath(final Activity2Activity context){
+    public void getAndDisplayPath(final TMapActivity context){
         TMapData data = new TMapData();
 
         TMapPoint start = route.get(0);
@@ -45,5 +45,13 @@ public class RouteManager {
                 context.displayPathOnMap(path);
             }
         });
+    }
+
+    public int getNumOfPointInRoute(){
+        return route.size();
+    }
+
+    public boolean hasCurrentWorkingRoute(){
+        return hasCurrentRoute;
     }
 }
