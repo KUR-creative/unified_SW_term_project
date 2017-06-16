@@ -1,6 +1,7 @@
 package com.example.kouram.activitystudy;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.widget.Button;
 
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
 public class Activity2Activity extends AppCompatActivity {
@@ -17,6 +19,9 @@ public class Activity2Activity extends AppCompatActivity {
     private TMapView mapView;
     private Button addMarkerBtn;
     private Button routeBtn;
+
+    private RouteManager routeManager = new RouteManager();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +46,29 @@ public class Activity2Activity extends AppCompatActivity {
                 System.out.println("add-marker");
                 TMapPoint point = mapView.getCenterPoint();
                 addMarker(point.getLatitude(), point.getLongitude(), "My Marker");
+
+                try {    // create new route.
+                    routeManager.createNewRoute();
+                } catch (RuntimeException e) {
+                    // if routeManager has current path,
+                    // then don't call createNewRoute();
+                } finally {
+                    routeManager.addPoint(point);
+                }
             }
         });
 
+        final Activity2Activity context = this;
         routeBtn = (Button)findViewById(R.id.get_route_btn);
         routeBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 System.out.println("get-route");
+                routeManager.getAndDisplayPath(context);
             }
         });
+
+        //--------
     }
 
     private int id = 0;
@@ -69,5 +87,17 @@ public class Activity2Activity extends AppCompatActivity {
         mapView.addMarkerItem("m" + id, item);
         id++;
         // 이걸로 삭제 가능. if(id == 2) mapView.removeMarkerItem("m1");
+
+    }
+
+    public void displayPathOnMap(final TMapPolyLine path){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                path.setLineWidth(5);
+                path.setLineColor(Color.RED);
+                mapView.addTMapPath(path);
+            }
+        });
     }
 }
