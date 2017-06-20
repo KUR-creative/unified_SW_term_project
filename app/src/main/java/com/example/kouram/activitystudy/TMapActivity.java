@@ -51,14 +51,10 @@ public class TMapActivity extends AppCompatActivity {
                 TMapPoint point = mapView.getCenterPoint();
                 addMarker(point.getLatitude(), point.getLongitude(), "My Marker");
 
-                try {    // create new route.
+                if(! routeManager.hasCurrentWorkingRoute()){
                     routeManager.createNewRoute();
-                } catch (RuntimeException e) {
-                    // if routeManager has current path,
-                    // then don't call createNewRoute();
-                } finally {
-                    routeManager.addPoint(point);
                 }
+                routeManager.addPoint(point);
             }
         });
 
@@ -74,6 +70,7 @@ public class TMapActivity extends AppCompatActivity {
 
         // 테스트용. 현재 중앙 좌표와 함께 일정 거리에 있는 무작위 좌표 하나를 Route에 추가한다.
         // path를 만들지는 않으니까 보고 싶으면 path 버튼으로 보셈.
+        // route와 path를 만들고 discard는 하지 않는다.
         randBtn = (Button)findViewById(R.id.rand_btn);
         randBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -81,7 +78,10 @@ public class TMapActivity extends AppCompatActivity {
                 Toast.makeText(context, "it add random Point(on circle) to RouteManager.", Toast.LENGTH_SHORT).show();
                 TMapPoint centerPoint = mapView.getCenterPoint();
                 TMapPoint randPoint = Tools.getRandPointAtCircle(centerPoint, 1000);
-                routeManager.createNewRoute();
+
+                if(! routeManager.hasCurrentWorkingRoute()){
+                    routeManager.createNewRoute();
+                }
                 routeManager.addPoint(centerPoint);
                 routeManager.addPoint(randPoint);
             }
@@ -89,6 +89,7 @@ public class TMapActivity extends AppCompatActivity {
         //--------
     }
 
+    // route와 path를 만들고 discard는 하지 않는다.
     private int id = 0;
     private void addMarker(double lat, double lng, String title) {
         TMapMarkerItem item = new TMapMarkerItem();
