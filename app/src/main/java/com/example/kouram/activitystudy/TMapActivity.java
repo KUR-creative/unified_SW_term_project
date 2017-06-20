@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
@@ -19,6 +20,7 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     private Button addMarkerBtn;
     private Button routeBtn;
+    private Button testBtn;
 
     private RouteManager routeManager = new RouteManager();
 
@@ -68,6 +70,17 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
+        /*
+        testBtn = (Button)findViewById(R.id.test_btn);
+        testBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                TMapData data = new TMapData();
+                //TMapPolyLine path = data.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
+                        //)
+            }
+        });
+        */
         //--------
     }
 
