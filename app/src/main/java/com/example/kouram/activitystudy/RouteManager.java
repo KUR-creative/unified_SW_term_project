@@ -59,7 +59,7 @@ public class RouteManager {
         int indexOfLastPoint = numOfPointsInRoute - 1;
 
         if(numOfPointsInRoute <= 1){
-            // toast or some info.
+            // it will be removed in product.
             Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -90,8 +90,6 @@ public class RouteManager {
                 }
             });
         }
-
-
     }
 
     public int getNumOfPointInRoute(){

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapMarkerItem;
@@ -22,6 +23,7 @@ public class TMapActivity extends AppCompatActivity {
     private Button routeBtn;
     private Button randBtn;
 
+    // Create only one manager! it's not singleton!!!
     private RouteManager routeManager = new RouteManager();
 
 
@@ -70,11 +72,18 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
+        // 테스트용. 현재 중앙 좌표와 함께 일정 거리에 있는 무작위 좌표 하나를 Route에 추가한다.
+        // path를 만들지는 않으니까 보고 싶으면 path 버튼으로 보셈.
         randBtn = (Button)findViewById(R.id.rand_btn);
         randBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                System.out.println("randBtn!");
+                Toast.makeText(context, "it add random Point(on circle) to RouteManager.", Toast.LENGTH_SHORT).show();
+                TMapPoint centerPoint = mapView.getCenterPoint();
+                TMapPoint randPoint = Tools.getRandPointAtCircle(centerPoint, 1000);
+                routeManager.createNewRoute();
+                routeManager.addPoint(centerPoint);
+                routeManager.addPoint(randPoint);
             }
         });
         //--------
