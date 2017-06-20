@@ -20,7 +20,7 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     private Button addMarkerBtn;
     private Button routeBtn;
-    private Button testBtn;
+    private Button randBtn;
 
     private RouteManager routeManager = new RouteManager();
 
@@ -70,17 +70,13 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        testBtn = (Button)findViewById(R.id.test_btn);
-        testBtn.setOnClickListener(new View.OnClickListener(){
+        randBtn = (Button)findViewById(R.id.rand_btn);
+        randBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                TMapData data = new TMapData();
-                //TMapPolyLine path = data.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
-                        //)
+                System.out.println("randBtn!");
             }
         });
-        */
         //--------
     }
 
