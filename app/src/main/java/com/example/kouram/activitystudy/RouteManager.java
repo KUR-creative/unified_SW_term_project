@@ -5,14 +5,7 @@ import android.widget.Toast;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
-
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Ko U Ram on 2017-06-16.
@@ -27,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class RouteManager {
     private boolean hasCurrentRoute = false;
     private ArrayList<TMapPoint> route = new ArrayList<>();
+    private ArrayList<TMapPoint> path = new ArrayList<>();
 
     public void createNewRoute() {
         if(hasCurrentRoute) {
@@ -73,8 +67,12 @@ public class RouteManager {
             data.findPathData(start, end, new TMapData.FindPathDataListenerCallback()
             {
                 @Override
-                public void onFindPathData(TMapPolyLine path) {
-                    context.displayPathOnMap(path);
+                public void onFindPathData(TMapPolyLine tmpPath) {
+                    context.displayPathOnMap(tmpPath);
+                    path = tmpPath.getLinePoint();
+                    for(TMapPoint p : path){
+                        System.out.println("lat " + p.getLatitude());
+                    }
                 }
             });
         }
@@ -85,8 +83,12 @@ public class RouteManager {
                 start, end, passList, 0, new TMapData.FindPathDataListenerCallback()
             {
                 @Override
-                public void onFindPathData(TMapPolyLine path) {
-                    context.displayPathOnMap(path);
+                public void onFindPathData(TMapPolyLine tmpPath) {
+                    context.displayPathOnMap(tmpPath);
+                    path = tmpPath.getLinePoint();
+                    for(TMapPoint p : path){
+                        System.out.println("lat " + p.getLatitude());
+                    }
                 }
             });
         }
@@ -99,4 +101,6 @@ public class RouteManager {
     public boolean hasCurrentWorkingRoute(){
         return hasCurrentRoute;
     }
+
+    public ArrayList<TMapPoint> getCurrentPath() { return path; }
 }
