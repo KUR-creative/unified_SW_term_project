@@ -13,14 +13,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapMarkerItem;
+import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
+
+import java.util.ArrayList;
 
 public class TMapActivity extends AppCompatActivity {
 
@@ -72,6 +77,8 @@ public class TMapActivity extends AppCompatActivity {
         mapView.setCompassMode(true);
         mapView.setTrackingMode(true);
         mapView.setSightVisible(true);
+
+        mapView.setLocationPoint(10,10);
         setLocationManager(mapView);
     }
     private void initButtons() {
@@ -118,6 +125,14 @@ public class TMapActivity extends AppCompatActivity {
                 routeManager.addPoint(randPoint);
             }
         });
+
+        Button poiBtn = (Button)findViewById(R.id.poi_btn);
+        poiBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                searchPOI("카페", 1000, 20);// 1000m 내에서 20개 검색.
+            }
+        });
     }
 
     private void setLocationManager(TMapView map) {
@@ -138,7 +153,7 @@ public class TMapActivity extends AppCompatActivity {
         if (lastKnownLocation != null) {
             double lng = lastKnownLocation.getLongitude();
             double lat = lastKnownLocation.getLatitude();
-            //System.out.println("longtitude=" + lng + ", latitude=" + lat);
+            System.out.println("-------------------> longtitude=" + lng + ", latitude=" + lat);
             map.setLocationPoint(lng, lat);
         }
     }
@@ -163,6 +178,54 @@ public class TMapActivity extends AppCompatActivity {
         id++;
         // 이걸로 삭제 가능. if(id == 2) mapView.removeMarkerItem("m1");
 
+    }
+
+    // radiusLevel = 1  : 300m 내에서 검색,
+    // radiusLevel = 33 : 9900m 내에서 검색,
+    // radiusLevel = 0  : 서버가 알아서 함.
+    private void searchPOI(String keyword, final int radiusLevel, final int searchCount) {
+        TMapData data = new TMapData();
+        if (!TextUtils.isEmpty(keyword)) {
+            TMapPoint nowLocation = mapView.getLocationPoint();
+            data.findAroundKeywordPOI(nowLocation, keyword, radiusLevel, searchCount, new TMapData.FindAroundKeywordPOIListenerCallback() {
+                @Override
+                public void onFindAroundKeywordPOI(final ArrayList<TMapPOIItem> arrayList) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mapView.removeAllMarkerItem();
+
+                            for (TMapPOIItem poi : arrayList) {
+                                addMarker(poi);
+                                System.out.println(poi.name);
+                            }
+
+                            if (arrayList.size() > 0) {
+                                TMapPOIItem poi = arrayList.get(0);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    public void addMarker(TMapPOIItem poi) {
+        TMapMarkerItem item = new TMapMarkerItem();
+        item.setTMapPoint(poi.getPOIPoint());
+        Bitmap icon = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_input_add)).getBitmap();
+        item.setIcon(icon);
+        item.setPosition(0.5f, 1);
+        item.setCalloutTitle(poi.getPOIName());
+        item.setCalloutSubTitle(poi.getPOIContent());
+
+        Bitmap left = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_dialog_alert)).getBitmap();
+        item.setCalloutLeftImage(left);
+
+        Bitmap right = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_input_get)).getBitmap();
+        item.setCalloutRightButtonImage(right);
+        item.setCanShowCallout(true);
+        mapView.addMarkerItem(poi.getPOIID(), item);
     }
 
     public void displayPathOnMap(final TMapPolyLine path){
