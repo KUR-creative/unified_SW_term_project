@@ -1,8 +1,15 @@
 package com.example.kouram.activitystudy;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
@@ -22,6 +28,29 @@ public class TMapActivity extends AppCompatActivity {
     // Create only one manager! it's not singleton!!!
     private RouteManager routeManager = new RouteManager();
 
+    private final LocationListener locationListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            //String msg = "New Latitude: " + location.getLatitude() + "New Longitude: " + location.getLongitude();
+            //Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+            //System.out.println("New Latitude: " + location.getLatitude() +
+                    //"New Longitude: " + location.getLongitude());
+            double lng = location.getLongitude();
+            double lat = location.getLatitude();
+            //System.out.println("longtitude=" + lng + ", latitude=" + lat);
+            mapView.setLocationPoint(lng, lat);
+        }
+
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    };
+
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +69,10 @@ public class TMapActivity extends AppCompatActivity {
         mapView.setIconVisibility(true);
         mapView.setZoomLevel(17);
         mapView.setMapType(TMapView.MAPTYPE_STANDARD);
-        mapView.setCompassMode(false);
+        mapView.setCompassMode(true);
         mapView.setTrackingMode(true);
         mapView.setSightVisible(true);
+        setLocationManager(mapView);
     }
     private void initButtons() {
         Button addMarkerBtn = (Button) findViewById(R.id.add_marker_btn);
@@ -89,6 +119,30 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setLocationManager(TMapView map) {
+        // check permission.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            throw new SecurityException("no proper permissions"); // fail
+        }
+        // set location listener
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                250, 0.3f, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                250, 0.3f, locationListener);
+
+        // set initial location.
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+        if (lastKnownLocation != null) {
+            double lng = lastKnownLocation.getLongitude();
+            double lat = lastKnownLocation.getLatitude();
+            //System.out.println("longtitude=" + lng + ", latitude=" + lat);
+            map.setLocationPoint(lng, lat);
+        }
+    }
+
 
     // route와 path를 만들고 discard는 하지 않는다.
     // id는 나중에 체계적으로 관리해야 함. 그래야 지우지.
