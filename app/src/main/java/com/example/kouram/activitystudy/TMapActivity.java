@@ -19,10 +19,6 @@ import com.skp.Tmap.TMapView;
 public class TMapActivity extends AppCompatActivity {
 
     private TMapView mapView;
-    private Button addMarkerBtn;
-    private Button routeBtn;
-    private Button randBtn;
-
     // Create only one manager! it's not singleton!!!
     private RouteManager routeManager = new RouteManager();
 
@@ -32,6 +28,11 @@ public class TMapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
 
+        inintTMap();
+        initButtons();
+    }
+
+    private void inintTMap() {
         mapView = (TMapView)findViewById(R.id.map_view);
         mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
         mapView.setLanguage(TMapView.LANGUAGE_KOREAN);
@@ -42,8 +43,9 @@ public class TMapActivity extends AppCompatActivity {
         mapView.setCompassMode(false);
         mapView.setTrackingMode(true);
         mapView.setSightVisible(true);
-
-        addMarkerBtn = (Button)findViewById(R.id.add_marker_btn);
+    }
+    private void initButtons() {
+        Button addMarkerBtn = (Button) findViewById(R.id.add_marker_btn);
         addMarkerBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -59,7 +61,7 @@ public class TMapActivity extends AppCompatActivity {
         });
 
         final TMapActivity context = this;
-        routeBtn = (Button)findViewById(R.id.get_route_btn);
+        Button routeBtn = (Button) findViewById(R.id.get_route_btn);
         routeBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -71,7 +73,7 @@ public class TMapActivity extends AppCompatActivity {
         // 테스트용. 현재 중앙 좌표와 함께 일정 거리에 있는 무작위 좌표 하나를 Route에 추가한다.
         // path를 만들지는 않으니까 보고 싶으면 path 버튼으로 보셈.
         // route와 path를 만들고 discard는 하지 않는다.
-        randBtn = (Button)findViewById(R.id.rand_btn);
+        Button randBtn = (Button) findViewById(R.id.rand_btn);
         randBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -86,10 +88,10 @@ public class TMapActivity extends AppCompatActivity {
                 routeManager.addPoint(randPoint);
             }
         });
-        //--------
     }
 
     // route와 path를 만들고 discard는 하지 않는다.
+    // id는 나중에 체계적으로 관리해야 함. 그래야 지우지.
     private int id = 0;
     private void addMarker(double lat, double lng, String title) {
         TMapMarkerItem item = new TMapMarkerItem();
