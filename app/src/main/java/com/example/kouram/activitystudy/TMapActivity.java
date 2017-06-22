@@ -3,6 +3,7 @@ package com.example.kouram.activitystudy;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,6 +29,8 @@ import com.skp.Tmap.TMapView;
 import java.util.ArrayList;
 
 public class TMapActivity extends AppCompatActivity {
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
 
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
@@ -141,7 +144,7 @@ public class TMapActivity extends AppCompatActivity {
                 //System.out.println("!");
                 if(routeManager.hasCurrentPath()){
                     System.out.println("has current path!");
-                    //routeManager.saveCurrentPath();
+                    routeManager.saveCurrentPath(dbHelper);
                 }else{
                     Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
                 }
