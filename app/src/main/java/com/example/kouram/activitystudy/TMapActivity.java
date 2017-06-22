@@ -169,13 +169,22 @@ public class TMapActivity extends AppCompatActivity {
         savePathBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //System.out.println("!");
+                System.out.println("call insert");
                 if(routeManager.hasCurrentPath()){
                     System.out.println("has current path!");
                     routeManager.saveCurrentPath(dbManager);
                 }else{
                     Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        Button selectBtn = (Button)findViewById(R.id.select_btn);
+        selectBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                System.out.println("call select");
+                dbManager.select();
             }
         });
     }
