@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class RouteManager {
     private boolean hasCurrentRoute = false;
+
     private ArrayList<TMapPoint> route = new ArrayList<>();
     private ArrayList<TMapPoint> path = new ArrayList<>();
 
@@ -107,4 +108,7 @@ public class RouteManager {
     }
 
     public ArrayList<TMapPoint> getCurrentPath() { return path; }
+    public boolean hasCurrentPath(){
+        return !path.isEmpty(); // not empty = has current path
+    }
 }

@@ -62,11 +62,11 @@ public class TMapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
 
-        inintTMap();
+        initTMap();
         initButtons();
     }
 
-    private void inintTMap() {
+    private void initTMap() {
         mapView = (TMapView)findViewById(R.id.map_view);
         mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
         mapView.setLanguage(TMapView.LANGUAGE_KOREAN);
@@ -138,7 +138,13 @@ public class TMapActivity extends AppCompatActivity {
         savePathBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                System.out.println("!");
+                //System.out.println("!");
+                if(routeManager.hasCurrentPath()){
+                    System.out.println("has current path!");
+                    //routeManager.saveCurrentPath();
+                }else{
+                    Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
