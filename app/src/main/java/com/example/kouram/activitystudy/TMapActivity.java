@@ -133,6 +133,14 @@ public class TMapActivity extends AppCompatActivity {
                 searchPOI("카페", 1000, 20);// 1000m 내에서 20개 검색.
             }
         });
+
+        Button savePathBtn = (Button)findViewById(R.id.save_btn);
+        savePathBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                System.out.println("!");
+            }
+        });
     }
 
     private void setLocationManager(TMapView map) {
@@ -162,7 +170,7 @@ public class TMapActivity extends AppCompatActivity {
     // route와 path를 만들고 discard는 하지 않는다.
     // id는 나중에 체계적으로 관리해야 함. 그래야 지우지.
     private int id = 0;
-    private void addMarker(double lat, double lng, String title) {
+    public void addMarker(double lat, double lng, String title) {
         TMapMarkerItem item = new TMapMarkerItem();
         TMapPoint point = new TMapPoint(lat, lng);
         item.setTMapPoint(point);
@@ -183,6 +191,7 @@ public class TMapActivity extends AppCompatActivity {
     // radiusLevel = 1  : 300m 내에서 검색,
     // radiusLevel = 33 : 9900m 내에서 검색,
     // radiusLevel = 0  : 서버가 알아서 함.
+    // searchCount는 최대 200개까지.
     private void searchPOI(String keyword, final int radiusLevel, final int searchCount) {
         TMapData data = new TMapData();
         if (!TextUtils.isEmpty(keyword)) {

@@ -71,7 +71,9 @@ public class RouteManager {
                     context.displayPathOnMap(tmpPath);
                     path = tmpPath.getLinePoint();
                     for(TMapPoint p : path){
-                        System.out.println("lat " + p.getLatitude());
+                        //System.out.println("lat " + p.getLatitude());
+                        // for graph algorithm
+                        //context.addMarker(p.getLatitude(), p.getLongitude(), "a");
                     }
                 }
             });
@@ -87,7 +89,9 @@ public class RouteManager {
                     context.displayPathOnMap(tmpPath);
                     path = tmpPath.getLinePoint();
                     for(TMapPoint p : path){
-                        System.out.println("lat " + p.getLatitude());
+                        //System.out.println("lat " + p.getLatitude());
+                        // for graph algorithm
+                        //context.addMarker(p.getLatitude(), p.getLongitude(), "a");
                     }
                 }
             });
