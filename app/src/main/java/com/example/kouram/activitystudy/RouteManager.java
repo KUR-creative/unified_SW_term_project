@@ -112,7 +112,7 @@ public class RouteManager {
         return !path.isEmpty(); // not empty = has current path
     }
 
-    public void saveCurrentPath(DBHelper helper){
+    public void saveCurrentPath(DBManager db){
         System.out.println("called!");
     }
 }

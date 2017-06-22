@@ -26,11 +26,13 @@ import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class TMapActivity extends AppCompatActivity {
-    private DBHelper dbHelper;
-    private SQLiteDatabase db;
+    private DBManager dbManager;
 
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
@@ -64,6 +66,32 @@ public class TMapActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
+
+        dbManager = new DBManager(this, "test.db", null, 1); // version은 내 맘대로 함.
+        SQLiteDatabase db = dbManager.getWritableDatabase();
+        dbManager.onCreate(db);
+
+        //blob data
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(100);
+        list.add(10000);
+        //serialize data (bos and oos do that jobs!)
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(list);
+            oos.flush();
+            oos.close();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // get blob data
+        final byte[] blobData = bos.toByteArray();
+
+
 
         initTMap();
         initButtons();
@@ -144,7 +172,7 @@ public class TMapActivity extends AppCompatActivity {
                 //System.out.println("!");
                 if(routeManager.hasCurrentPath()){
                     System.out.println("has current path!");
-                    routeManager.saveCurrentPath(dbHelper);
+                    routeManager.saveCurrentPath(dbManager);
                 }else{
                     Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
                 }
