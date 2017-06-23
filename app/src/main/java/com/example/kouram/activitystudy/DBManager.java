@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.skp.Tmap.TMapPoint;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,6 +25,22 @@ import java.util.ArrayList;
 class DBManager extends SQLiteOpenHelper {
     private SQLiteDatabase db;
 
+    private static final String TOURS       = "tours";
+    private static final String _ID         = "_id";
+    private static final String NAME        = "name";
+
+    private static final String PATHS       = "paths";
+    private static final String LATITUDE    = "latitude";
+    private static final String LONGITUDE   = "longitude";
+    private static final String TOUR_ID     = "tour_id";
+
+    private static final String DESCRIPTIONS= "descriptions";
+    private static final String PATH_INDEX  = "path_index";
+
+    private static final String TEXTS       = "texts";
+    private static final String STRING      = "string";
+
+
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
     }
@@ -33,88 +51,78 @@ class DBManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase tmpDB) {
         // sql의 syntax가 틀리면 앱이 죽어버린다.
-        String sql = "create table if not exists data( _id INTEGER primary key autoincrement, " +
-                "name TEXT, age INTEGER, address TEXT)";
-        String blobSql = "create table if not exists blobs( _id INTEGER primary key autoincrement," +
-                "data BLOB)";
-        tmpDB.execSQL(sql);
-        tmpDB.execSQL(blobSql);
+        String toursSql =
+                "CREATE TABLE IF NOT EXISTS " +
+                "tours(" +
+                "  _id          INTEGER PRIMARY KEY," +
+                "  name         TEXT);";
+        String pathsSql =
+                "CREATE TABLE IF NOT EXISTS " +
+                "paths(" +
+                "  latitude     REAL," +
+                "  longitude    REAL," +
+                "  tour_id      INTEGER," +
+                "  FOREIGN KEY(tour_id) REFERENCES tours(_id) );";
+        String descriptionsSql =
+                "CREATE TABLE IF NOT EXISTS " +
+                "descriptions(" +
+                "  description  TEXT," +
+                "  path_index   INTEGER," +
+                "  tour_id      INTEGER," +
+                "  FOREIGN KEY(tour_id) REFERENCES tours(_id) );";
+        String textsSql =
+                "CREATE TABLE IF NOT EXISTS " +
+                "texts(" +
+                "  string       TEXT," +
+                "  latitude     REAL," +
+                "  longitude    REAL," +
+                "  path_id      INTEGER," +
+                "  FOREIGN KEY(path_id) REFERENCES paths(_id) );";
 
+        tmpDB.execSQL(toursSql);
+        tmpDB.execSQL(pathsSql);
+        tmpDB.execSQL(descriptionsSql);
+        tmpDB.execSQL(textsSql);
         db = tmpDB;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "drop table if exists data";
-        db.execSQL(sql);
-
-        String blobSql = "drop table if exists blobs";
-        db.execSQL(blobSql);
         onCreate(db);
     }
 
-    public void insert(byte[] blobData){
-        ContentValues blobValue = new ContentValues();
-        blobValue.put("data", blobData);
-        db.insert("blobs", null, blobValue);
+    public void insert(ArrayList<TMapPoint> points){
+    }
 
+    public void insert(String str, TMapPoint point){
         ContentValues values = new ContentValues();
-        values.put("name", "asdf");
-        values.put("age", 26);
-        values.put("address", "ButSSan");
-        db.insert("data", null, values);
-
-        ContentValues values2 = new ContentValues();
-        values2.put("name", "지워");
-        values2.put("age", 26);
-        values2.put("address", "스울");
-        db.insert("data", null, values2);
+        values.put(STRING, str);
+        //values.put(LATITUDE, point.getLatitude());
+        //values.put(LONGITUDE, point.getLongitude());
+        db.insert(TEXTS, null, values);
     }
 
     public void select(){
-        Cursor c = db.query("data", null, null, null, null, null, null, null);
+        // to test insert(text,point)
+        Cursor c = db.query(TEXTS, null, null, null, null, null, null, null);
         while(c.moveToNext()){
-            int id = c.getInt(c.getColumnIndex("_id"));
-            String name = c.getString(c.getColumnIndex("name"));
-            int age = c.getInt(c.getColumnIndex("age"));
-            String address = c.getString(c.getColumnIndex("address"));
+            String text = c.getString(c.getColumnIndex(STRING));
+            double latitude = c.getDouble(c.getColumnIndex(LATITUDE));
+            double longitude = c.getDouble(c.getColumnIndex(LONGITUDE));
 
-            System.out.println("result: " + "_id = " + id
-                    + ", name = " + name
-                    + ", age = " + age
-                    + ", address = " + address);
+            System.out.println(
+                      TEXTS + " = " + text
+                    + ", " + LATITUDE + " = " + latitude
+                    + ", " + LONGITUDE + " = " + longitude);
         }
         c.close();
-
-        Cursor blobCursor = db.query("blobs", null, null, null, null, null, null, null);
-        while(blobCursor.moveToNext()){
-            int id = blobCursor.getInt(blobCursor.getColumnIndex("_id"));
-            byte[] data = blobCursor.getBlob(blobCursor.getColumnIndex("data"));
-
-            try {
-                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-                ArrayList<Integer> outList = (ArrayList<Integer>)ois.readObject();
-                System.out.print("list values: ");
-                for(int num : outList){
-                    System.out.println(num);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        blobCursor.close();
     }
 
     public void update(){
-        ContentValues new_values = new ContentValues();
-        new_values.put("address", "UPDATED DATA");
-        db.update("data", new_values, "name=?", new String[] {"지워"});
     }
 
     public void delete(){
-        System.out.println("call delete click listener");
-        db.delete("data", "_id=?", new String[]{"1"}); // _id = 1 인 거 지워짐.
-        db.delete("data", "name=?", new String[]{"지워"}); // name = 지워 인 거 전부 지워짐.
     }
+
 }
 
