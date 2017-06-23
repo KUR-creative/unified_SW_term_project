@@ -5,6 +5,10 @@ import android.widget.Toast;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -114,5 +118,7 @@ public class RouteManager {
 
     public void saveCurrentPath(DBManager db){
         System.out.println("called!");
+        //serialize data (bos and oos do that job!)
+        db.insert(path, -1); // TODO: just test!!
     }
 }

@@ -67,7 +67,7 @@ public class TMapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
 
-        dbManager = new DBManager(this, "test.db", null, 1); // version은 내 맘대로 함.
+        dbManager = new DBManager(this, "test00.db", null, 1); // version은 내 맘대로 함.
         SQLiteDatabase db = dbManager.getWritableDatabase();
         dbManager.onCreate(db);
 
@@ -165,6 +165,28 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
+
+        // tests for DB
+        Button selectBtn = (Button)findViewById(R.id.select_btn);
+        selectBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                System.out.println("call select");
+                dbManager.select();
+            }
+        });
+
+        Button strAndPointToDBBtn = (Button)findViewById(R.id.str_to_db_btn);
+        strAndPointToDBBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("call str to db");
+                TMapPoint point = new TMapPoint(1.1, 2.2);
+                dbManager.insert("text", point);
+            }
+        });
+
+        // just test!
         Button savePathBtn = (Button)findViewById(R.id.save_btn);
         savePathBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -179,12 +201,13 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
-        Button selectBtn = (Button)findViewById(R.id.select_btn);
-        selectBtn.setOnClickListener(new View.OnClickListener(){
+        // just test!
+        Button loadPathBtn = (Button)findViewById(R.id.load_path_btn);
+        loadPathBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("call select");
-                dbManager.select();
+                System.out.println("call load!");
+                //dbManager.load
             }
         });
     }

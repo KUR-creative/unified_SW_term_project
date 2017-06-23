@@ -91,7 +91,16 @@ class DBManager extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insert(ArrayList<TMapPoint> points){
+    // 나중에 tour를 저장하는 insert에서 호출된다.
+    // insert Path
+    public void insert(ArrayList<TMapPoint> points, int tour_id){
+        for(TMapPoint point : points){
+            ContentValues values = new ContentValues();
+            values.put(LATITUDE, point.getLatitude());
+            values.put(LONGITUDE, point.getLongitude());
+            values.put(TOUR_ID, tour_id);
+            db.insert(PATHS, null, values);
+        }
     }
 
     public void insert(String str, TMapPoint point){
@@ -102,20 +111,37 @@ class DBManager extends SQLiteOpenHelper {
         db.insert(TEXTS, null, values);
     }
 
-    public void select(){
+    public void select() {
+        {
         // to test insert(text,point)
         Cursor c = db.query(TEXTS, null, null, null, null, null, null, null);
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             String text = c.getString(c.getColumnIndex(STRING));
             double latitude = c.getDouble(c.getColumnIndex(LATITUDE));
             double longitude = c.getDouble(c.getColumnIndex(LONGITUDE));
 
             System.out.println(
-                      TEXTS + " = " + text
-                    + ", " + LATITUDE + " = " + latitude
-                    + ", " + LONGITUDE + " = " + longitude);
+                    TEXTS + " = " + text
+                            + ", " + LATITUDE + " = " + latitude
+                            + ", " + LONGITUDE + " = " + longitude);
         }
         c.close();
+        }
+
+        {
+        Cursor c = db.query(PATHS, null, null, null, null, null, null, null);
+        while (c.moveToNext()) {
+            int tour_id = c.getInt(c.getColumnIndex(TOUR_ID));
+            double latitude = c.getDouble(c.getColumnIndex(LATITUDE));
+            double longitude = c.getDouble(c.getColumnIndex(LONGITUDE));
+
+            System.out.println(
+                    TOUR_ID + " = " + tour_id
+                            + ", " + LATITUDE + " = " + latitude
+                            + ", " + LONGITUDE + " = " + longitude);
+        }
+        c.close();
+        }
     }
 
     public void update(){

@@ -8,29 +8,42 @@
     tools:context="com.example.kouram.activitystudy.TMapActivity">
 
 
-    <Button
-        android:id="@+id/str_to_db_btn"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="str to db" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="51dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/save_btn"
-            android:layout_width="92dp"
+            android:id="@+id/str_to_db_btn"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:text="save current path" />
+            android:text="str to db" />
 
         <Button
             android:id="@+id/select_btn"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="select" />
+    </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="51dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/save_btn"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.08"
+            android:text="save now path" />
+        <Button
+            android:id="@+id/load_path_btn"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:text="load path" />
     </LinearLayout>
 
     <LinearLayout
