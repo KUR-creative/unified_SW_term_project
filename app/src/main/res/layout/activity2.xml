@@ -7,15 +7,35 @@
 
     tools:context="com.example.kouram.activitystudy.TMapActivity">
 
+
     <Button
-        android:id="@+id/save_btn"
-        android:layout_width="92dp"
+        android:id="@+id/str_to_db_btn"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:text="save current path" />
+        android:text="str to db" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="83dp"
+        android:layout_height="51dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/save_btn"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:text="save current path" />
+
+        <Button
+            android:id="@+id/select_btn"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="select" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="1">
 
