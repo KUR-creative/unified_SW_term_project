@@ -41,13 +41,10 @@ public class RouteManager {
         route.add(point);
     }
 
-    // 경유지가 있다면?  (3개 이상)     checked.
-    // 경유지가 없다면?  (2개: 시작-끝) checked.
-    // 시작,끝이 없다면? (0개 / 1개)    checked.
-    //
     // path는 화면에 표시하는 길을 의미한다.
     // route는 TMapPoint의 리스트이다.
-    public TMapPolyLine getPath(){
+    // path를 구할 수 없다면 null을 반환한다.
+    public Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > getPathData(){
         int numOfPointsInRoute = getNumOfPointInRoute();
         int indexOfLastPoint = numOfPointsInRoute - 1;
 
@@ -68,7 +65,10 @@ public class RouteManager {
             ArrayList<TMapPoint> passList = new ArrayList<>(route.subList(1, indexOfLastPoint));
             dom = new DomThread(start, end, passList);
         }
-        return getPathFrom(dom);
+        Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> >
+                retTuple = new Tuple<>(getPathFrom(dom), dom.getPathnav());
+        path = retTuple.x.getLinePoint(); // for test
+        return retTuple;
     }
 
     private TMapPolyLine getPathFrom(DomThread dom){

@@ -32,14 +32,7 @@ public class DomThread extends Thread{
     private TMapPoint end;
     private ArrayList<TMapPoint> pass;
 
-    public class Tuple<X, Y> {
-        public final X x;
-        public final Y y;
-        public Tuple(X x, Y y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+
 
 
     private ArrayList<Tuple<Integer,String>> pathnav = new ArrayList<Tuple<Integer,String>>();

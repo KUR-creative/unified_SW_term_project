@@ -63,7 +63,7 @@ class DBManager extends SQLiteOpenHelper {
                 "  longitude    REAL," +
                 "  tour_id      INTEGER," +
                 "  FOREIGN KEY(tour_id) REFERENCES tours(_id) );";
-        String descriptionsSql =
+        String descriptionsSql =  // for navigation.
                 "CREATE TABLE IF NOT EXISTS " +
                 "descriptions(" +
                 "  description  TEXT," +
@@ -111,6 +111,7 @@ class DBManager extends SQLiteOpenHelper {
         db.insert(TEXTS, null, values);
     }
 
+    // TODO: just for test
     public void select() {
         {
         // to test insert(text,point)

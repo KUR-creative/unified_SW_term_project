@@ -2,6 +2,8 @@ package com.example.kouram.activitystudy;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -10,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class TMapActivity extends AppCompatActivity {
     private DBManager dbManager;
@@ -38,16 +42,24 @@ public class TMapActivity extends AppCompatActivity {
     // Create only one manager! it's not singleton!!!
     private RouteManager routeManager = new RouteManager();
 
+    final TMapActivity thisContext = this;
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             //String msg = "New Latitude: " + location.getLatitude() + "New Longitude: " + location.getLongitude();
             //Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
             //System.out.println("New Latitude: " + location.getLatitude() +
                     //"New Longitude: " + location.getLongitude());
-            double lng = location.getLongitude();
+            double lon = location.getLongitude();
             double lat = location.getLatitude();
             //System.out.println("longtitude=" + lng + ", latitude=" + lat);
-            mapView.setLocationPoint(lng, lat);
+            mapView.setLocationPoint(lon, lat);
+
+            //Toast.makeText(thisContext, "GPS!!!.", Toast.LENGTH_SHORT).show();
+            if(routeManager.hasCurrentPath()){
+                checkUserLocation(lat, lon, extractedPath, pathTupleList);
+            }else{
+              Toast.makeText(thisContext, "GPS ELSE!!!.", Toast.LENGTH_SHORT).show();
+            }
         }
 
         public void onProviderDisabled(String provider) {
@@ -62,36 +74,25 @@ public class TMapActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
 
+    TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity2);
 
         dbManager = new DBManager(this, "test00.db", null, 1); // version은 내 맘대로 함.
         SQLiteDatabase db = dbManager.getWritableDatabase();
         dbManager.onCreate(db);
 
-        //blob data
-        ArrayList<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(100);
-        list.add(10000);
-        //serialize data (bos and oos do that jobs!)
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos;
-        try {
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(list);
-            oos.flush();
-            oos.close();
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // get blob data
-        final byte[] blobData = bos.toByteArray();
-
-
+        tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         initTMap();
         initButtons();
@@ -105,13 +106,16 @@ public class TMapActivity extends AppCompatActivity {
         mapView.setIconVisibility(true);
         mapView.setZoomLevel(17);
         mapView.setMapType(TMapView.MAPTYPE_STANDARD);
-        mapView.setCompassMode(true);
+        mapView.setCompassMode(false);
         mapView.setTrackingMode(true);
         mapView.setSightVisible(true);
 
         mapView.setLocationPoint(10,10);
         setLocationManager(mapView);
     }
+
+    private ArrayList<TMapPoint> extractedPath = new ArrayList<>();
+    private ArrayList<Tuple<Integer,String>> pathTupleList = new ArrayList<>();
     private void initButtons() {
         Button addMarkerBtn = (Button) findViewById(R.id.add_marker_btn);
         addMarkerBtn.setOnClickListener(new View.OnClickListener(){
@@ -134,7 +138,11 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("get-route");
-                TMapPolyLine path = routeManager.getPath();
+                TMapPolyLine path = routeManager.getPathData().x;
+
+                extractedPath = path.getLinePoint();
+                pathTupleList = routeManager.getPathData().y;
+
                 if(path == null){
                     Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
                 }else{
@@ -291,6 +299,37 @@ public class TMapActivity extends AppCompatActivity {
                     });
                 }
             });
+        }
+    }
+
+    //TODO
+    int routeNum = 0;
+    private boolean checkUserLocation(double lat, double lon, ArrayList<TMapPoint> path, ArrayList<Tuple<Integer,String>> pathTuple){ //routeNum 전역선언
+
+        Toast.makeText(thisContext, "" + routeNum, Toast.LENGTH_SHORT).show();
+
+        float[] userDistance = new float[1];
+
+        ArrayList<TMapPoint> pathData = path;
+        ArrayList<Tuple<Integer,String>> pathNav = pathTuple;
+
+        double savedLat = pathData.get(pathNav.get(routeNum).x).getLatitude();
+        double savedLon = pathData.get(pathNav.get(routeNum).x).getLongitude();
+        Location.distanceBetween(lat,lon, savedLat, savedLon, userDistance);
+
+        if(userDistance[0] < 15) {
+            if(pathNav.get(routeNum).y.contains("이동")) {
+                tts.speak(pathNav.get(routeNum).y, TextToSpeech.QUEUE_FLUSH, null);
+            }
+            //System.out.println("user in: "+pathNav.get(routeNum).y);
+            addMarker(pathData.get(pathNav.get(routeNum).x).getLatitude(),pathData.get(pathNav.get(routeNum).x).getLongitude(),"complete");
+            routeNum++;
+            return true;
+        } else {
+            Toast.makeText(thisContext, "ELSE !!!.", Toast.LENGTH_SHORT).show();
+            //System.out.println(pathData.get(pathNav.get(routeNum).x));
+            //System.out.println("user out ");
+            return false;
         }
     }
 
