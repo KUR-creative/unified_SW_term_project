@@ -59,41 +59,28 @@ public class RouteManager {
         TMapPoint start = route.get(0);
         TMapPoint end = route.get(indexOfLastPoint);
 
-        if(numOfPointsInRoute == 2)
-        {   // 경유지 없음
-            DomThread dom = new DomThread(start, end);
-            dom.start();
-            try {
-                dom.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            ArrayList<TMapPoint> pathData = dom.pathData;
-            TMapPolyLine path = new TMapPolyLine();
-            for(TMapPoint point : pathData){
-                path.addLinePoint(point);
-            }
-            return path;
-        }
-        else
-        {   // 경유지 있음
+        DomThread dom;
+        if(numOfPointsInRoute == 2) {
+            // 경유지 없음
+            dom = new DomThread(start, end);
+        } else {
+            // 경유지 있음
             ArrayList<TMapPoint> passList = new ArrayList<>(route.subList(1, indexOfLastPoint));
-            DomThread dom = new DomThread(start, end, passList);
-            dom.start();
-            try {
-                dom.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            ArrayList<TMapPoint> pathData = dom.pathData;
-            TMapPolyLine path = new TMapPolyLine();
-            for(TMapPoint point : pathData){
-                path.addLinePoint(point);
-            }
-            return path;
+            dom = new DomThread(start, end, passList);
         }
+        return getPathFrom(dom);
+    }
+
+    private TMapPolyLine getPathFrom(DomThread dom){
+        dom.start();
+        try {
+            dom.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<TMapPoint> pointList = dom.getPathData();
+        return Tools.getPathFrom(pointList);
     }
 
     public int getNumOfPointInRoute(){

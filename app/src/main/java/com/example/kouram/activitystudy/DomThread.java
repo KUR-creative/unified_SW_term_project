@@ -41,9 +41,18 @@ public class DomThread extends Thread{
         }
     }
 
-    ArrayList<Tuple<Integer,String>> pathnav = new ArrayList<Tuple<Integer,String>>();
 
-    ArrayList<TMapPoint> pathData = new ArrayList<TMapPoint>();
+    private ArrayList<Tuple<Integer,String>> pathnav = new ArrayList<Tuple<Integer,String>>();
+    private ArrayList<TMapPoint> pathData = new ArrayList<TMapPoint>();
+
+    public ArrayList<Tuple<Integer, String>> getPathnav() {
+        return pathnav;
+    }
+
+    public ArrayList<TMapPoint> getPathData() {
+        return pathData;
+    }
+
 
 
     public DomThread(TMapPoint _start, TMapPoint _end) {

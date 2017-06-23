@@ -1,6 +1,9 @@
 package com.example.kouram.activitystudy;
 
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
+
+import java.util.ArrayList;
 
 /**
  * Created by Ko U Ram on 2017-06-21.
@@ -31,5 +34,14 @@ public class Tools {
         }
 
         return new TMapPoint(endLat,endLon);
+    }
+
+    static
+    public TMapPolyLine getPathFrom(ArrayList<TMapPoint> pointList){
+        TMapPolyLine path = new TMapPolyLine();
+        for(TMapPoint point : pointList){
+            path.addLinePoint(point);
+        }
+        return path;
     }
 }
