@@ -207,7 +207,12 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("call load!");
-                //dbManager.load
+                ArrayList<TMapPoint> points = dbManager.loadPath(-1);
+                TMapPolyLine path = new TMapPolyLine();
+                for(TMapPoint point : points){
+                    path.addLinePoint(point);
+                }
+                displayPathOnMap(path);
             }
         });
     }

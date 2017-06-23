@@ -6,9 +6,6 @@ import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -121,4 +118,11 @@ public class RouteManager {
         //serialize data (bos and oos do that job!)
         db.insert(path, -1); // TODO: just test!!
     }
+
+    /*
+    public void swapCurrentPath(ArrayList<TMapPoint> newPath){
+        hasCurrentRoute = false;
+        path = newPath;
+    }
+    */
 }

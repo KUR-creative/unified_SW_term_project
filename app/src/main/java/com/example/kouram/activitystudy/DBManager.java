@@ -150,5 +150,21 @@ class DBManager extends SQLiteOpenHelper {
     public void delete(){
     }
 
+    // TODO: 만일 table에 맞는 id가 없다면?
+    public ArrayList<TMapPoint> loadPath(int _id) {
+        ArrayList<TMapPoint> retPath = new ArrayList<>();
+
+        String[] whereArgs = new String[]{ String.valueOf(_id) };
+        String whereClause = TOUR_ID + "=?";
+        Cursor c = db.query(PATHS, null, whereClause, whereArgs, null, null, null);
+        while(c.moveToNext()){
+            double lat = c.getDouble(c.getColumnIndex("latitude"));
+            double lon = c.getDouble(c.getColumnIndex("longitude"));
+            retPath.add(new TMapPoint(lat,lon));
+        }
+        c.close();
+
+        return retPath;
+    }
 }
 
