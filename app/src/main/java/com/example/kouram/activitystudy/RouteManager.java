@@ -1,8 +1,5 @@
 package com.example.kouram.activitystudy;
 
-import android.widget.Toast;
-
-import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 
@@ -50,53 +47,52 @@ public class RouteManager {
     //
     // path는 화면에 표시하는 길을 의미한다.
     // route는 TMapPoint의 리스트이다.
-    public void getAndDisplayPath(final TMapActivity context){
+    public TMapPolyLine getPath(){
         int numOfPointsInRoute = getNumOfPointInRoute();
         int indexOfLastPoint = numOfPointsInRoute - 1;
 
         if(numOfPointsInRoute <= 1){
             // it will be removed in product.
-            Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
-            return;
+            return null;
         }
 
         TMapPoint start = route.get(0);
         TMapPoint end = route.get(indexOfLastPoint);
 
-        TMapData data = new TMapData();
         if(numOfPointsInRoute == 2)
         {   // 경유지 없음
-            data.findPathData(start, end, new TMapData.FindPathDataListenerCallback()
-            {
-                @Override
-                public void onFindPathData(TMapPolyLine tmpPath) {
-                    context.displayPathOnMap(tmpPath);
-                    path = tmpPath.getLinePoint();
-                    for(TMapPoint p : path){
-                        //System.out.println("lat " + p.getLatitude());
-                        // for graph algorithm
-                        //context.addMarker(p.getLatitude(), p.getLongitude(), "a");
-                    }
-                }
-            });
+            DomThread dom = new DomThread(start, end);
+            dom.start();
+            try {
+                dom.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            ArrayList<TMapPoint> pathData = dom.pathData;
+            TMapPolyLine path = new TMapPolyLine();
+            for(TMapPoint point : pathData){
+                path.addLinePoint(point);
+            }
+            return path;
         }
         else
         {   // 경유지 있음
             ArrayList<TMapPoint> passList = new ArrayList<>(route.subList(1, indexOfLastPoint));
-            data.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
-                start, end, passList, 0, new TMapData.FindPathDataListenerCallback()
-            {
-                @Override
-                public void onFindPathData(TMapPolyLine tmpPath) {
-                    context.displayPathOnMap(tmpPath);
-                    path = tmpPath.getLinePoint();
-                    for(TMapPoint p : path){
-                        //System.out.println("lat " + p.getLatitude());
-                        // for graph algorithm
-                        //context.addMarker(p.getLatitude(), p.getLongitude(), "a");
-                    }
-                }
-            });
+            DomThread dom = new DomThread(start, end, passList);
+            dom.start();
+            try {
+                dom.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            ArrayList<TMapPoint> pathData = dom.pathData;
+            TMapPolyLine path = new TMapPolyLine();
+            for(TMapPoint point : pathData){
+                path.addLinePoint(point);
+            }
+            return path;
         }
     }
 

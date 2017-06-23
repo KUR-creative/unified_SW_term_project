@@ -1,13 +1,11 @@
 package com.example.kouram.activitystudy;
 
 import com.skp.Tmap.TMapPoint;
-import com.skp.Tmap.TMapPolyLine;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -33,7 +31,6 @@ public class DomThread extends Thread{
     private TMapPoint start;
     private TMapPoint end;
     private ArrayList<TMapPoint> pass;
-    private boolean ispass;
 
     public class Tuple<X, Y> {
         public final X x;
@@ -46,21 +43,19 @@ public class DomThread extends Thread{
 
     ArrayList<Tuple<Integer,String>> pathnav = new ArrayList<Tuple<Integer,String>>();
 
-    ArrayList<TMapPoint> pathdata = new ArrayList<TMapPoint>();
+    ArrayList<TMapPoint> pathData = new ArrayList<TMapPoint>();
 
 
     public DomThread(TMapPoint _start, TMapPoint _end) {
         start = _start;
         end = _end;
         pass = null;
-        ispass = false;
     }
 
     public DomThread(TMapPoint _start, TMapPoint _end, ArrayList<TMapPoint> _pass) {
         start = _start;
         end = _end;
         pass = _pass;
-        ispass = true;
     }
 
     public TMapPoint WGS84toEPSG3857(TMapPoint point){ //API 좌표 -> 파싱 좌표
@@ -235,7 +230,7 @@ public class DomThread extends Thread{
         //pathdata를 실제 사용할 좌표계 주소로 변환하여 만듬
         for(int i=0; i < tmpArray.size(); i=i+2) {
             TMapPoint tp = new TMapPoint(Double.parseDouble(tmpArray.get(i + 1)), Double.parseDouble(tmpArray.get(i)));
-            pathdata.add(EPSG3857toWGS84(tp));
+            pathData.add(EPSG3857toWGS84(tp));
         }
     }
 }

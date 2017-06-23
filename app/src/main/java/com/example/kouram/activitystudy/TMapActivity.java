@@ -134,7 +134,12 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("get-route");
-                routeManager.getAndDisplayPath(context);
+                TMapPolyLine path = routeManager.getPath();
+                if(path == null){
+                    Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
+                }else{
+                    displayPathOnMap(path);
+                }
             }
         });
 
