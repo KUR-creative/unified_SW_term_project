@@ -19,6 +19,9 @@ public class HistoryActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         numRow = intent.getIntExtra(MainActivity.ROUTE_ID, 0);
+        if(numRow == 0){
+            finish();
+        }
 
         LinearLayout topLL2 = (LinearLayout) findViewById(R.id.linear_root);
         for(int i = 0; i < numRow; i++){
@@ -40,11 +43,5 @@ public class HistoryActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        //안드로이드 백버튼 막기
-        return;
     }
 }

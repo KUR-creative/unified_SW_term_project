@@ -48,8 +48,7 @@
                     android:layout_height="30dp"
                     android:layout_above="@+id/totalDistanceText"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:text="TextView" />
+                    android:layout_alignParentStart="true" />
 
                 <TextView
                     android:id="@+id/totalDistanceText"
@@ -58,8 +57,7 @@
                     android:layout_alignBaseline="@+id/history_btn"
                     android:layout_alignBottom="@+id/history_btn"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:text="TextView" />
+                    android:layout_alignParentStart="true" />
 
                 <Button
                     android:id="@+id/routeMenu"
@@ -98,12 +96,11 @@
             android:id="@+id/navigationText"
             android:layout_width="118dp"
             android:layout_height="29dp"
-            android:text="TextView"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 </LinearLayout>

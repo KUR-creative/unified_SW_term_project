@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
@@ -33,6 +34,7 @@ import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -40,7 +42,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
-    private DBManager       dbManager   = new DBManager(this, "test09.db", null, 1); // version은 내 맘대로 함.
+    private DBManager       dbManager   = new DBManager(this, "test10.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
     private TextToSpeech tts;
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
     private TextView navigationText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +245,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+//추가함
+        mapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+            @Override
+            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+                Intent intent = new Intent(getApplicationContext(), PhotoPopUpActivity.class);
+
+                Bitmap sendBitmap = imageForListener;
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                sendBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                intent.putExtra("image",byteArray);
+                startActivity(intent);
+
+            }
+        });
     }
 
     private void clearMap(){
@@ -294,6 +312,44 @@ public class MainActivity extends AppCompatActivity {
         id++;
         // 이걸로 삭제 가능. if(id == 2) mapView.removeMarkerItem("m1");
 
+    }
+//수정
+    Bitmap imageForListener;
+    public void addMarker(Bitmap bitmap, double lat, double lng, String title) {
+        TMapMarkerItem item = new TMapMarkerItem();
+        TMapPoint point = new TMapPoint(lat, lng);
+        item.setTMapPoint(point);
+
+        // just '+' marker!
+        Bitmap icon = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_input_add)).getBitmap();
+        item.setIcon(icon);
+        item.setPosition(0.5f, 1);
+
+        imageForListener = bitmap;
+        Bitmap left = resizingImage(bitmap,140);
+        item.setCalloutLeftImage(left);
+        Bitmap right = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_menu_zoom)).getBitmap();
+        item.setCalloutRightButtonImage(right);
+        item.setCanShowCallout(true);
+        mapView.addMarkerItem("m" + id, item);
+        id++;
+        // 이걸로 삭제 가능. if(id == 2) mapView.removeMarkerItem("m1");
+
+    }
+//추가함
+    Bitmap resizingImage(Bitmap image, int size){
+        Bitmap bitmap = image;
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+
+        Bitmap resized = null;
+
+        while (height > size) {
+            resized = Bitmap.createScaledBitmap(bitmap, (width * size) / height, size, true);
+            height = resized.getHeight();
+            width = resized.getWidth();
+        }
+        return resized;
     }
 
     // radiusLevel = 1  : 300m 내에서 검색,
@@ -513,7 +569,6 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, PICK_FROM_CAMERA);
     }
 
-    Bitmap cropedPhoto = null;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode != RESULT_OK) {
@@ -539,8 +594,12 @@ public class MainActivity extends AppCompatActivity {
             final Bundle extras = data.getExtras();
 
             if (extras != null) {
-                cropedPhoto = extras.getParcelable("data");
+                Bitmap cropedPhoto = extras.getParcelable("data");
                 //photoImageView.setImageBitmap(cropedPhoto);
+                double lat = mapView.getLatitude();
+                double lon = mapView.getLongitude();
+                TMapPoint point = new TMapPoint(lat, lon);
+                tourManager.addLinkedPicture(point, cropedPhoto);
             }
 
             // 임시 파일 삭제
@@ -571,6 +630,17 @@ public class MainActivity extends AppCompatActivity {
             TMapPolyLine path = Tools.getPathFrom(dbManager.loadPath(id));
             displayPathOnMap(path);
             // and pics... or more..
+
+            ArrayList<TMapPoint> pointList = new ArrayList<>();
+            ArrayList<Bitmap> pics = dbManager.loadLinkedPic(id, pointList);
+
+            int len = pics.size();
+            for(int i = 0; i < len; i++){
+                Bitmap pic = pics.get(i);
+                double lat = pointList.get(i).getLatitude();
+                double lon = pointList.get(i).getLongitude();
+                addMarker(pic, lat, lon, "marker");
+            }
         }
     }
 }

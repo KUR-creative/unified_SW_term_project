@@ -29,6 +29,10 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog"></activity>
         <activity android:name=".HistoryActivity"></activity>
+        <activity
+            android:name=".PhotoPopUpActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog"></activity>
     </application>
 
 </manifest>

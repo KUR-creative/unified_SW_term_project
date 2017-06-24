@@ -295,18 +295,24 @@ class DBManager extends SQLiteOpenHelper {
         return retPath;
     }
 
-    public Bitmap loadLinkedPic(int _id){
-        Bitmap retPic = null;
+    public ArrayList<Bitmap> loadLinkedPic(int _id, ArrayList<TMapPoint> pointList){
+        ArrayList<Bitmap> retPics = new ArrayList<>();
+
         String[] whereArgs = new String[]{ String.valueOf(_id) };
         String whereClause = TOUR_ID + "=?";
         Cursor c = db.query(PICTURES, null, whereClause, whereArgs, null, null, null);
         while(c.moveToNext()){
             byte[] blobData = c.getBlob(c.getColumnIndex(PICTURE));
             System.out.println(blobData);
-            retPic = BitmapFactory.decodeByteArray(blobData, 0, blobData.length);
+            Bitmap tmpBmp = BitmapFactory.decodeByteArray(blobData, 0, blobData.length);
+            retPics.add(tmpBmp);
+            double lat = c.getDouble(c.getColumnIndex(LATITUDE));
+            double lon = c.getDouble(c.getColumnIndex(LONGITUDE));
+            pointList.add(new TMapPoint(lat,lon));
         }
         c.close();
-        return retPic;
+
+        return retPics;
     }
 }
 
