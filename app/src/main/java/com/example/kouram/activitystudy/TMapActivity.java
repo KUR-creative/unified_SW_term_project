@@ -344,6 +344,16 @@ public class TMapActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // just for test!!
+        Button loadPicFROM_ID_5_Btn = (Button)findViewById(R.id.load_pic_btn);
+        loadPicFROM_ID_5_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap photo = dbManager.loadPic_FROM_ID_5();
+                photoImageView.setImageBitmap(photo);
+            }
+        });
     }
 
     private void setLocationManager(TMapView map) {
@@ -623,21 +633,7 @@ public class TMapActivity extends AppCompatActivity {
             return;
         }
 
-        if(requestCode == CROP_FROM_CAMERA) {
-            final Bundle extras = data.getExtras();
-
-            if (extras != null) {
-                Bitmap photo = extras.getParcelable("data");
-                photoImageView.setImageBitmap(photo);
-            }
-
-            // 임시 파일 삭제
-            File f = new File(mImageCaptureUri.getPath());
-            if (f.exists()) {
-                f.delete();
-            }
-        }
-        else if(requestCode == PICK_FROM_CAMERA){
+        if(requestCode == PICK_FROM_CAMERA){
             // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정합니다.
             // 이후에 이미지 크롭 어플리케이션을 호출하게 됩니다.
 
@@ -651,6 +647,20 @@ public class TMapActivity extends AppCompatActivity {
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, CROP_FROM_CAMERA);
+        }
+        else if(requestCode == CROP_FROM_CAMERA) {
+            final Bundle extras = data.getExtras();
+
+            if (extras != null) {
+                Bitmap photo = extras.getParcelable("data");
+                photoImageView.setImageBitmap(photo);
+            }
+
+            // 임시 파일 삭제
+            File f = new File(mImageCaptureUri.getPath());
+            if (f.exists()) {
+                f.delete();
+            }
         }
     }
 }

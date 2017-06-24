@@ -15,15 +15,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        act2btn = (Button)findViewById(R.id.goto_act2_btn);
-        act2btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-            // call other activity!
-            Intent intent = new Intent(MainActivity.this, TMapActivity.class);
-            startActivity(intent);
-            finish(); // 이제 타이틀로는 돌아가지 않음.
-            }
-        });
     }
 }

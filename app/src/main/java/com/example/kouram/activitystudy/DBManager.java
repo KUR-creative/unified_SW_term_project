@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.skp.Tmap.TMapPoint;
 
@@ -169,20 +170,9 @@ class DBManager extends SQLiteOpenHelper {
     }
 
     private byte[] getBlobDataFrom(Bitmap bitmap) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos;
-        try {
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(bitmap);
-            oos.flush();
-            oos.close();
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("error in getBlobDataFrom(Bitmap) !");
-        }
-
-        return bos.toByteArray();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
     }
 
     public void insert(String string, TMapPoint point){
@@ -277,7 +267,7 @@ class DBManager extends SQLiteOpenHelper {
     }
 
     // TODO: 만일 table에 맞는 id가 없다면?
-    public ArrayList<TMapPoint> loadPath(int _id) {
+    public ArrayList<TMapPoint> loadPath(int _id) {  //just for test...!
         ArrayList<TMapPoint> retPath = new ArrayList<>();
 
         String[] whereArgs = new String[]{ String.valueOf(_id) };
@@ -291,6 +281,20 @@ class DBManager extends SQLiteOpenHelper {
         c.close();
 
         return retPath;
+    }
+
+    public Bitmap loadPic_FROM_ID_5(){
+        Bitmap retPic = null;
+        String[] whereArgs = new String[]{ String.valueOf(5) };
+        String whereClause = TOUR_ID + "=?";
+        Cursor c = db.query(PICTURES, null, whereClause, whereArgs, null, null, null);
+        while(c.moveToNext()){
+            byte[] blobData = c.getBlob(c.getColumnIndex(PICTURE));
+            System.out.println(blobData);
+            retPic = BitmapFactory.decodeByteArray(blobData, 0, blobData.length);
+        }
+        c.close();
+        return retPic;
     }
 }
 
