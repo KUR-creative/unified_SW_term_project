@@ -184,8 +184,12 @@ public class MainActivity extends AppCompatActivity {
         getRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
+                //startActivityForResult(intent, ACT_TEST);
                 Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
-                startActivityForResult(intent, ACT_TEST);
+                intent.putExtra("lat-lon",
+                                new Tuple<Double,Double>(-1.1,-2.2));
+                startActivityForResult(intent, GET_PATH_NAVI_DATA);
             }
         });
     }
@@ -425,9 +429,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static final int ACT_TEST = 123;
-    private static final int PICK_FROM_CAMERA = 0;
-    private static final int CROP_FROM_CAMERA = 2;
+    //private static final int ACT_TEST = 123;
+    private static final int GET_PATH_NAVI_DATA = 0;
+    private static final int PICK_FROM_CAMERA   = 1;
+    private static final int CROP_FROM_CAMERA   = 2;
 
     private Uri mImageCaptureUri;
     private ImageView photoImageView;
@@ -493,10 +498,20 @@ public class MainActivity extends AppCompatActivity {
                 f.delete();
             }
         }
+        else if(requestCode == GET_PATH_NAVI_DATA){
+            ArrayList<Tuple<Double,Double>> pathNaviData;
+            pathNaviData = (ArrayList<Tuple<Double, Double>>)
+                            data.getSerializableExtra("path-navi-data");
+            for(Tuple<Double,Double> tuple : pathNaviData){
+                System.out.println("lat = " + tuple.left + ", lon = " + tuple.right);
+            }
+        }
+        /*
         else if(requestCode == ACT_TEST){
             String str = data.getStringExtra("test");
             Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
             //"get path intent TEST!!!"
         }
+        */
     }
 }

@@ -31,6 +31,10 @@ public class GetPathActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // get start point = gps point.
+                Intent latLonIntent = getIntent();
+                Tuple<Double,Double> latLon
+                    = (Tuple<Double,Double>) latLonIntent.getSerializableExtra("lat-lon");
+                        //System.out.println("lat = " + latLon.left + ", lon = " + latLon.right);
                 // get pass list (optional)
                 // get end point
                 // finish!
