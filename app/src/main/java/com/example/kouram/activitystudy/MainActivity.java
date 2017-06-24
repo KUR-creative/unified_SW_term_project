@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         navigationText = (TextView)findViewById(R.id.navigationText);
 
-        initCamera();
+        //initCamera();
     }
 
     @Override
@@ -227,6 +227,19 @@ public class MainActivity extends AppCompatActivity {
                 int num = dbManager.getNumOfRowInTours();
                 intent.putExtra(ROUTE_ID, num);
                 startActivityForResult(intent, GET_ROUTE_ID);
+            }
+        });
+
+        mButton = (Button) findViewById(R.id.get_pic_btn);
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(pathOnMap != null && navigationInfos != null){
+                    doTakePhotoAction();
+                }else{
+                    Toast.makeText(context, "먼저 경로를 생성하십시오.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -487,17 +500,6 @@ public class MainActivity extends AppCompatActivity {
     //private ImageView photoImageView;
     private Button mButton;
 
-    private void initCamera(){
-        mButton = (Button) findViewById(R.id.get_pic_btn);
-        //photoImageView = (ImageView) findViewById(R.id.image);
-
-        mButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                doTakePhotoAction();
-            }
-        });
-    }
     private void doTakePhotoAction() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
