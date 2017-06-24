@@ -14,7 +14,6 @@ import static junit.framework.Assert.fail;
 
 /**
  * Created by Ko U Ram on 2017-06-24.
- */
 
 public class TourManagerTest {
     @Test
@@ -118,3 +117,4 @@ public class TourManagerTest {
         }
     }
 }
+ */

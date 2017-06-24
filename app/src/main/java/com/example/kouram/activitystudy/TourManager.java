@@ -14,6 +14,7 @@ import java.util.ArrayList;
 class TourManager {
     class Tour {
         // 필수 field: 없으면 저장 불가능.
+        String                                  name        = null;
         ArrayList< TMapPoint >                  path        = null;
         ArrayList< Tuple<Integer,String> >      naviInfos   = null;
         // optionals.
@@ -22,12 +23,17 @@ class TourManager {
     }
 
     private Tour currentTour = null;
-    public void createNewTour() {
+    public void createNewTour(String name,
+                              ArrayList<TMapPoint> path,
+                              ArrayList<Tuple<Integer,String>> navigationInfos) {
         if(currentTour != null){
             throw new RuntimeException("createNewTour cannot be duplicated in same time!" +
                     "you need to end job for current Tour.");
         }
         currentTour = new Tour();
+        currentTour.name = name;
+        setCurrentPath(path);
+        setCurrent(navigationInfos);
     }
 
     public boolean hasCurrentWorkingTour() {
@@ -39,13 +45,6 @@ class TourManager {
 
     public void discardCurrentTour() {
         currentTour = null;
-    }
-
-    public void setCurrentEssentialValues(ArrayList<TMapPoint> path,
-                                          ArrayList<Tuple<Integer,String>> navigationInfos)
-    {
-        setCurrentPath(path);
-        setCurrent(navigationInfos);
     }
 
     public void setCurrentPath(ArrayList<TMapPoint> path) {
