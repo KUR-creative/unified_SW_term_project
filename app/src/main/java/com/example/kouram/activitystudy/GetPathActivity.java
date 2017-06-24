@@ -43,24 +43,33 @@ public class GetPathActivity extends AppCompatActivity {
             // get pass list (optional)
             // get end point
                 // TODO: 만일 currentRadius == 0이라면: finish하지 않음..!
+                if(currentRadius == 0)
+                    throw new RuntimeException("currentRadius == 0: 이거 지워라. 테스트 끝나고.,");
                 TMapPoint end = Tools.getRandPointAtCircle(start, currentRadius);
-            // add to routeManager.
-                //routeManager.add(start);
-                //routeManager.add(end);
-            // get path / navi from routeManager.
-                //Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > pathNavi
-                //routeManager.getPathData();
-            // finish!
-                Intent outIntent = getIntent();
-                ArrayList<Tuple<Double,Double>> pathData = new ArrayList<Tuple<Double, Double>>();
-                pathData.add(new Tuple<Double, Double>(1.1, 2.2));
-                pathData.add(new Tuple<Double, Double>(11.1, 22.2));
-                pathData.add(new Tuple<Double, Double>(111.1, 222.2));
-                outIntent.putExtra(MainActivity.PATH_DATA, pathData);
 
-                ArrayList<Tuple<Integer,String>> naviData = new ArrayList<Tuple<Integer, String>>();
-                naviData.add(new Tuple<Integer, String>(1,"test"));
-                outIntent.putExtra(MainActivity.NAVI_DATA, naviData);
+            // add to routeManager.
+                routeManager.createNewRoute();
+                routeManager.add(start);
+                routeManager.add(end);
+
+            // get path / navi from routeManager.
+                Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > pathNaviData;
+                pathNaviData = routeManager.getPathData();
+
+                ArrayList<TMapPoint> points = pathNaviData.left.getLinePoint();
+                ArrayList<Tuple<Integer,String>> naviInfos = pathNaviData.right;
+
+            // finish!
+                ArrayList<Tuple<Double,Double>> pathDataList = new ArrayList<Tuple<Double, Double>>();
+                for(TMapPoint point : points){
+                    pathDataList.add(new Tuple<Double, Double>(point.getLatitude(),
+                                                               point.getLongitude()));
+                }
+
+                Intent outIntent = getIntent();
+                outIntent.putExtra(MainActivity.PATH_DATA, pathDataList);
+                outIntent.putExtra(MainActivity.NAVI_DATA, naviInfos);
+
                 setResult(RESULT_OK, outIntent);
                 finish();
             }

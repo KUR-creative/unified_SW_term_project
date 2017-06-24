@@ -187,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
                 //startActivityForResult(intent, ACT_TEST);
                 Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
                 intent.putExtra("lat-lon",
-                                new Tuple<Double,Double>(-1.1,-2.2));
+                                new Tuple<Double,Double>(mapView.getLatitude(),
+                                                         mapView.getLongitude()));
                 startActivityForResult(intent, GET_PATH_NAVI_DATA);
             }
         });
