@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 public class GetPathActivity extends AppCompatActivity {
     private final int ACT_GET_RADIUS = 0;
 
@@ -28,8 +30,16 @@ public class GetPathActivity extends AppCompatActivity {
         getPathBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // get start point = gps point.
+                // get pass list (optional)
+                // get end point
+                // finish!
                 Intent outIntent = getIntent();
-                outIntent.putExtra("test", "get path intent TEST!!!");
+                ArrayList<Tuple<Double,Double>> pathNaviData = new ArrayList<Tuple<Double, Double>>();
+                pathNaviData.add(new Tuple<Double, Double>(1.1, 2.2));
+                pathNaviData.add(new Tuple<Double, Double>(11.1, 22.2));
+                pathNaviData.add(new Tuple<Double, Double>(111.1, 222.2));
+                outIntent.putExtra("path-navi-data", pathNaviData);
                 setResult(RESULT_OK, outIntent);
                 finish();
             }
@@ -45,7 +55,7 @@ public class GetPathActivity extends AppCompatActivity {
 
         if(requestCode == ACT_GET_RADIUS){
             currentRadius = data.getIntExtra("result", 0);
-            System.out.println("r = " + currentRadius);
+            //System.out.println("r = " + currentRadius);
         }
     }
 }
