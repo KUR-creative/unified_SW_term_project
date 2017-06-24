@@ -551,6 +551,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PATH_DATA = "path-data";
     public static final String NAVI_DATA = "navi-data";
     public static final String ROUTE_ID  = "route-id";
+    public static final String LOADED_ROUTE_ID = "load-data";
 
     private Uri mImageCaptureUri;
     //private ImageView photoImageView;
@@ -576,9 +577,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(requestCode == PICK_FROM_CAMERA){
-            // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정합니다.
-            // 이후에 이미지 크롭 어플리케이션을 호출하게 됩니다.
-
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setDataAndType(mImageCaptureUri, "image/*");
 
@@ -595,7 +593,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (extras != null) {
                 Bitmap cropedPhoto = extras.getParcelable("data");
-                //photoImageView.setImageBitmap(cropedPhoto);
                 double lat = mapView.getLatitude();
                 double lon = mapView.getLongitude();
                 TMapPoint point = new TMapPoint(lat, lon);
@@ -609,20 +606,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if(requestCode == GET_PATH_NAVI_DATA){
-            ArrayList<Tuple<Double,Double>> pathData;
-            pathData = (ArrayList<Tuple<Double, Double>>)
-                       data.getSerializableExtra(PATH_DATA);
+            int loadedRouteID = data.getIntExtra(LOADED_ROUTE_ID, -2);
 
-            // TODO: 언제 discard할까? 다시 경로를 생성할 때. 혹은 tour를 불러올 때.
-            pathOnMap = Tools.convertFrom(pathData);
-            displayPathOnMap(Tools.getPathFrom(pathOnMap));
+            if(loadedRouteID == -1){
+                ArrayList<Tuple<Double,Double>> pathData;
+                pathData = (ArrayList<Tuple<Double, Double>>)
+                        data.getSerializableExtra(PATH_DATA);
 
-            navigationInfos = (ArrayList<Tuple<Integer, String>>)
-                              data.getSerializableExtra(NAVI_DATA);
-            tourManager.createNewTour("temp-name", pathOnMap, navigationInfos);
+                // TODO: 언제 discard할까? 다시 경로를 생성할 때. 혹은 tour를 불러올 때.
+                pathOnMap = Tools.convertFrom(pathData);
+                displayPathOnMap(Tools.getPathFrom(pathOnMap));
+
+                navigationInfos = (ArrayList<Tuple<Integer, String>>)
+                        data.getSerializableExtra(NAVI_DATA);
+                tourManager.createNewTour("temp-name", pathOnMap, navigationInfos);
+            }else if(loadedRouteID >= 0){
+                System.out.println("YOLO");
+            }else{
+                throw new RuntimeException("intent error!");
+            }
         }
         else if(requestCode == GET_ROUTE_ID){
-            int id = data.getIntExtra(ROUTE_ID, -1);
+            int id = data.getIntExtra(ROUTE_ID, 0);
             //System.out.println(id);
 
             // preview! - 그저 그리기만 할 뿐이다.

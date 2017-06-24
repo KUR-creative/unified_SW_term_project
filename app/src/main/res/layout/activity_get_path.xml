@@ -131,7 +131,7 @@
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/button7"
+                    android:id="@+id/load_btn"
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"

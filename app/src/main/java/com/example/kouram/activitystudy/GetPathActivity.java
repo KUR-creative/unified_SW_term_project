@@ -70,7 +70,19 @@ public class GetPathActivity extends AppCompatActivity {
                 Intent outIntent = getIntent();
                 outIntent.putExtra(MainActivity.PATH_DATA, pathDataList);
                 outIntent.putExtra(MainActivity.NAVI_DATA, naviInfos);
+                outIntent.putExtra(MainActivity.LOADED_ROUTE_ID, -1);
 
+                setResult(RESULT_OK, outIntent);
+                finish();
+            }
+        });
+
+        Button loadBtn = (Button)findViewById(R.id.load_btn);
+        loadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent outIntent = new Intent();
+                outIntent.putExtra(MainActivity.LOADED_ROUTE_ID, 1); // for test
                 setResult(RESULT_OK, outIntent);
                 finish();
             }
