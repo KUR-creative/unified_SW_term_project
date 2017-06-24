@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class GetPathActivity extends AppCompatActivity {
+    private final int ACT_GET_RADIUS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +20,7 @@ public class GetPathActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(GetPathActivity.this, PopUpActivity.class);
                 intent.putExtra("data", "Test Popup");
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, ACT_GET_RADIUS);
             }
         });
 
@@ -33,6 +34,18 @@ public class GetPathActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
 
+    private int currentRadius = 0;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != RESULT_OK) {
+            return;
+        }
+
+        if(requestCode == ACT_GET_RADIUS){
+            currentRadius = data.getIntExtra("result", 0);
+            System.out.println("r = " + currentRadius);
+        }
     }
 }

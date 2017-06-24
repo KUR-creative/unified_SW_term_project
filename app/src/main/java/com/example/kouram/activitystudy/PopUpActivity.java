@@ -24,9 +24,9 @@ public class PopUpActivity extends Activity {
     //확인 버튼 클릭
     public void onClose(View v){
         //데이터 전달하기
-        Intent intent = new Intent();
-        intent.putExtra("result", "Close Popup");
-        setResult(RESULT_OK, intent);
+        Intent outIntent = new Intent();
+        outIntent.putExtra("result", -123);
+        setResult(RESULT_OK, outIntent);
 
         //액티비티(팝업) 닫기
         finish();
