@@ -208,10 +208,8 @@ public class MainActivity extends AppCompatActivity {
                     if(tourManager.hasCurrentWorkingTour()){
                                 dbManager.select();
                         tourManager.saveAndDiscardCurrentTour(dbManager);
-                        //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
-                        // 하지만 지금은 tour가 겹쳐서 저장될 수 있음.
-                        // 조치가 필요함.
                                 dbManager.select();
+                        clearMap();
                         return;
                     }
                 }
@@ -219,6 +217,13 @@ public class MainActivity extends AppCompatActivity {
                                Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void clearMap(){
+        TMapPolyLine eraser = new TMapPolyLine();
+        displayPathOnMap(eraser);
+        pathOnMap = null;
+        navigationInfos = null;
     }
 
     private void setLocationManager(TMapView map) {
