@@ -41,7 +41,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
-    private RouteManager    routeManager= new RouteManager();
     private DBManager       dbManager   = new DBManager(this, "test07.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
@@ -434,6 +433,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICK_FROM_CAMERA   = 1;
     private static final int CROP_FROM_CAMERA   = 2;
 
+    public static final String PATH_DATA = "path-data";
+    public static final String NAVI_DATA = "navi-data";
+
     private Uri mImageCaptureUri;
     private ImageView photoImageView;
     private Button mButton;
@@ -499,11 +501,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if(requestCode == GET_PATH_NAVI_DATA){
-            ArrayList<Tuple<Double,Double>> pathNaviData;
-            pathNaviData = (ArrayList<Tuple<Double, Double>>)
-                            data.getSerializableExtra("path-navi-data");
-            for(Tuple<Double,Double> tuple : pathNaviData){
+            ArrayList<Tuple<Double,Double>> pathData;
+            pathData = (ArrayList<Tuple<Double, Double>>)
+                            data.getSerializableExtra(PATH_DATA);
+            for(Tuple<Double,Double> tuple : pathData){
                 System.out.println("lat = " + tuple.left + ", lon = " + tuple.right);
+            }
+
+            ArrayList<Tuple<Integer,String>> naviData;
+            naviData = (ArrayList<Tuple<Integer, String>>)
+                    data.getSerializableExtra(NAVI_DATA);
+            for(Tuple<Integer,String> tuple : naviData){
+                System.out.println("index = " + tuple.left + ", str = " + tuple.right);
             }
         }
         /*
