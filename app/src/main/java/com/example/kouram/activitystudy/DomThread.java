@@ -222,7 +222,7 @@ public class DomThread extends Thread{
         }
 
         for(int i=0; i < pathnav.size(); i++)
-            System.out.println(pathnav.get(i).x + " | " + pathnav.get(i).y);
+            System.out.println(pathnav.get(i).left + " | " + pathnav.get(i).right);
 
         for(int j=0; j < dataDescription.size(); j++){
             System.out.println(j+":"+dataDescription.get(j));

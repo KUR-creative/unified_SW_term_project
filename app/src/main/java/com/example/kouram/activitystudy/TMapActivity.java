@@ -2,7 +2,6 @@ package com.example.kouram.activitystudy;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,9 +28,6 @@ import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -41,24 +37,25 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
     private RouteManager routeManager = new RouteManager();
+    private TextToSpeech tts;
+
+    // map을 위한 정보들 - 없으면 아직 path가 없는 것.
+    // path를 그리기 위한 데이터 / navigation을 위한 데이터
+    private ArrayList<TMapPoint> pathOnMap = null;
+    private ArrayList<Tuple<Integer,String>> navigationInfo = null;
 
     final TMapActivity thisContext = this;
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-            //String msg = "New Latitude: " + location.getLatitude() + "New Longitude: " + location.getLongitude();
-            //Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-            //System.out.println("New Latitude: " + location.getLatitude() +
-                    //"New Longitude: " + location.getLongitude());
             double lon = location.getLongitude();
             double lat = location.getLatitude();
-            //System.out.println("longtitude=" + lng + ", latitude=" + lat);
             mapView.setLocationPoint(lon, lat);
 
-            //Toast.makeText(thisContext, "GPS!!!.", Toast.LENGTH_SHORT).show();
-            if(routeManager.hasCurrentPath()){
-                checkUserLocation(lat, lon, extractedPath, pathTupleList);
+            //TODO: 그래서 path가 discard되면 pathOnMap = null로 해야 함.
+            if(pathOnMap != null){
+                checkUserLocation(lat, lon, pathOnMap, navigationInfo);
             }else{
-              Toast.makeText(thisContext, "GPS ELSE!!!.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(thisContext, "GPS ELSE!!!.", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -74,18 +71,20 @@ public class TMapActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
 
-    TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity2);
 
-        dbManager = new DBManager(this, "test00.db", null, 1); // version은 내 맘대로 함.
-        SQLiteDatabase db = dbManager.getWritableDatabase();
-        dbManager.onCreate(db);
+        initDB();
+        initTTS();
+        initTMap();
+        initButtons();
+    }
 
-        tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+    private void initTTS() {
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if(status != TextToSpeech.ERROR) {
@@ -93,10 +92,14 @@ public class TMapActivity extends AppCompatActivity {
                 }
             }
         });
-
-        initTMap();
-        initButtons();
     }
+
+    private void initDB() {
+        dbManager = new DBManager(this, "test00.db", null, 1); // version은 내 맘대로 함.
+        SQLiteDatabase db = dbManager.getWritableDatabase();
+        dbManager.onCreate(db);
+    }
+
 
     private void initTMap() {
         mapView = (TMapView)findViewById(R.id.map_view);
@@ -114,8 +117,7 @@ public class TMapActivity extends AppCompatActivity {
         setLocationManager(mapView);
     }
 
-    private ArrayList<TMapPoint> extractedPath = new ArrayList<>();
-    private ArrayList<Tuple<Integer,String>> pathTupleList = new ArrayList<>();
+
     private void initButtons() {
         Button addMarkerBtn = (Button) findViewById(R.id.add_marker_btn);
         addMarkerBtn.setOnClickListener(new View.OnClickListener(){
@@ -138,16 +140,18 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("get-route");
-                TMapPolyLine path = routeManager.getPathData().x;
-
-                extractedPath = path.getLinePoint();
-                pathTupleList = routeManager.getPathData().y;
-
-                if(path == null){
-                    Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
-                }else{
+                Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> >
+                        pathDataTuple = routeManager.getPathData();
+                if(pathDataTuple != null){
+                    TMapPolyLine path = pathDataTuple.left;
+                    pathOnMap = path.getLinePoint();
+                    navigationInfo = routeManager.getPathData().right;
                     displayPathOnMap(path);
+                    routeManager.discardCurrentRoute();
+                }else{
+                    Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
@@ -178,8 +182,7 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
 
-
-        // tests for DB
+        //================== tests for DB ==================
         Button selectBtn = (Button)findViewById(R.id.select_btn);
         selectBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -205,9 +208,9 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("call insert");
-                if(routeManager.hasCurrentPath()){
+                if(pathOnMap != null){
                     System.out.println("has current path!");
-                    routeManager.saveCurrentPath(dbManager);
+                    dbManager.insert(pathOnMap, -2);
                 }else{
                     Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
                 }
@@ -220,8 +223,18 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("call load!");
-                ArrayList<TMapPoint> pointList = dbManager.loadPath(-1);
+                ArrayList<TMapPoint> pointList = dbManager.loadPath(-2);
                 displayPathOnMap( Tools.getPathFrom(pointList) );
+            }
+        });
+
+        //================== tests for tour ==================
+        Button saveTourBtn = (Button)findViewById(R.id.save_tour_btn);
+        saveTourBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // tour = current path + nav info + pictures + some text
+                //tourManager.save(tour);
             }
         });
     }
@@ -303,31 +316,29 @@ public class TMapActivity extends AppCompatActivity {
     }
 
     //TODO
-    int routeNum = 0;
+    private int routeNum = 0;
     private boolean checkUserLocation(double lat, double lon, ArrayList<TMapPoint> path, ArrayList<Tuple<Integer,String>> pathTuple){ //routeNum 전역선언
-
-        Toast.makeText(thisContext, "" + routeNum, Toast.LENGTH_SHORT).show();
-
+        //Toast.makeText(thisContext, "" + routeNum, Toast.LENGTH_SHORT).show();
         float[] userDistance = new float[1];
 
         ArrayList<TMapPoint> pathData = path;
         ArrayList<Tuple<Integer,String>> pathNav = pathTuple;
 
-        double savedLat = pathData.get(pathNav.get(routeNum).x).getLatitude();
-        double savedLon = pathData.get(pathNav.get(routeNum).x).getLongitude();
+        double savedLat = pathData.get(pathNav.get(routeNum).left).getLatitude();
+        double savedLon = pathData.get(pathNav.get(routeNum).left).getLongitude();
         Location.distanceBetween(lat,lon, savedLat, savedLon, userDistance);
 
         if(userDistance[0] < 15) {
-            if(pathNav.get(routeNum).y.contains("이동")) {
-                tts.speak(pathNav.get(routeNum).y, TextToSpeech.QUEUE_FLUSH, null);
+            if(pathNav.get(routeNum).right.contains("이동")) {
+                tts.speak(pathNav.get(routeNum).right, TextToSpeech.QUEUE_FLUSH, null);
             }
-            //System.out.println("user in: "+pathNav.get(routeNum).y);
-            addMarker(pathData.get(pathNav.get(routeNum).x).getLatitude(),pathData.get(pathNav.get(routeNum).x).getLongitude(),"complete");
+            //System.out.println("user in: "+pathNav.get(routeNum).right);
+            addMarker(pathData.get(pathNav.get(routeNum).left).getLatitude(),pathData.get(pathNav.get(routeNum).left).getLongitude(),"complete");
             routeNum++;
             return true;
         } else {
-            Toast.makeText(thisContext, "ELSE !!!.", Toast.LENGTH_SHORT).show();
-            //System.out.println(pathData.get(pathNav.get(routeNum).x));
+            //Toast.makeText(thisContext, "ELSE !!!.", Toast.LENGTH_SHORT).show();
+            //System.out.println(pathData.get(pathNav.get(routeNum).left));
             //System.out.println("user out ");
             return false;
         }

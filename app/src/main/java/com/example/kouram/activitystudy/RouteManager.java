@@ -19,12 +19,12 @@ public class RouteManager {
     private boolean hasCurrentRoute = false;
 
     private ArrayList<TMapPoint> route = new ArrayList<>();
-    private ArrayList<TMapPoint> path = new ArrayList<>();
+    //private ArrayList<TMapPoint> path = new ArrayList<>();
 
     public void createNewRoute() {
         if(hasCurrentRoute) {
             throw new RuntimeException("createNewRoute cannot be duplicated in same time!" +
-                                    "you need to end job for current path.");
+                                    "you need to end job for current route.");
         }
         hasCurrentRoute = true;
     }
@@ -41,8 +41,8 @@ public class RouteManager {
         route.add(point);
     }
 
-    // path는 화면에 표시하는 길을 의미한다.
     // route는 TMapPoint의 리스트이다.
+    // path는 화면에 표시하는 길을 의미한다.
     // path를 구할 수 없다면 null을 반환한다.
     public Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > getPathData(){
         int numOfPointsInRoute = getNumOfPointInRoute();
@@ -67,7 +67,7 @@ public class RouteManager {
         }
         Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> >
                 retTuple = new Tuple<>(getPathFrom(dom), dom.getPathnav());
-        path = retTuple.x.getLinePoint(); // for test
+        //path = retTuple.left.getLinePoint(); // for test
         return retTuple;
     }
 
@@ -91,6 +91,7 @@ public class RouteManager {
         return hasCurrentRoute;
     }
 
+    /*
     public ArrayList<TMapPoint> getCurrentPath() { return path; }
     public boolean hasCurrentPath(){
         return !path.isEmpty(); // not empty = has current path
@@ -100,12 +101,6 @@ public class RouteManager {
         System.out.println("called!");
         //serialize data (bos and oos do that job!)
         db.insert(path, -1); // TODO: just test!!
-    }
-
-    /*
-    public void swapCurrentPath(ArrayList<TMapPoint> newPath){
-        hasCurrentRoute = false;
-        path = newPath;
     }
     */
 }

@@ -5,10 +5,10 @@ package com.example.kouram.activitystudy;
  */
 
 public class Tuple<X, Y> {
-    public final X x;
-    public final Y y;
-    public Tuple(X x, Y y) {
-        this.x = x;
-        this.y = y;
+    public final X left;
+    public final Y right;
+    public Tuple(X l, Y r) {
+        this.left = l;
+        this.right = r;
     }
 }

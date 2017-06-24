@@ -24,6 +24,12 @@
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="select" />
+
+        <Button
+            android:id="@+id/save_tour_btn"
+            android:layout_width="63dp"
+            android:layout_height="wrap_content"
+            android:text="save tour" />
     </LinearLayout>
 
 
@@ -66,6 +72,7 @@
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="get, display path" />
+
 
         <Button
             android:id="@+id/rand_btn"
