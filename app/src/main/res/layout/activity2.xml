@@ -30,6 +30,14 @@
             android:layout_width="63dp"
             android:layout_height="wrap_content"
             android:text="save tour" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="90dp"
+            android:layout_height="102dp"
+            android:layout_gravity="center"
+            android:layout_weight="0.37"
+            android:background="#eee" />
     </LinearLayout>
 
 
@@ -50,6 +58,11 @@
             android:layout_width="78dp"
             android:layout_height="wrap_content"
             android:text="load path" />
+        <Button
+            android:id="@+id/get_pic_btn"
+            android:layout_width="59dp"
+            android:layout_height="wrap_content"
+            android:text="get img" />
     </LinearLayout>
 
     <LinearLayout
