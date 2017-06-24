@@ -8,8 +8,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+
+import java.util.ArrayList;
 
 public class PopUpActivity extends Activity {
+    private ArrayList<Button> radioBtns = new ArrayList<>();
+    private int outRadius = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,12 +26,30 @@ public class PopUpActivity extends Activity {
         getWindow().setAttributes(layoutParams);
 
         setContentView(R.layout.activity_pop_up);
+        initButtons();
     }
+
+    private void initButtons() {
+        for(int i = 1; i <= 10; i++){
+            final int radius = i * 500;
+            int id = getResources().getIdentifier("radioButton" + radius,
+                                                  "id", getPackageName());
+            Button tmpBtn = (Button)findViewById(id);
+            tmpBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    outRadius = radius;
+                }
+            });
+            radioBtns.add(tmpBtn);
+        }
+    }
+
     //확인 버튼 클릭
     public void onClose(View v){
         //데이터 전달하기
         Intent outIntent = new Intent();
-        outIntent.putExtra("result", -123);
+        outIntent.putExtra("result", outRadius);
         setResult(RESULT_OK, outIntent);
 
         //액티비티(팝업) 닫기
