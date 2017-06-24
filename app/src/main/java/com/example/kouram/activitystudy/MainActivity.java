@@ -184,7 +184,8 @@ public class MainActivity extends AppCompatActivity {
         getRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
+                startActivity(intent);
             }
         });
     }
