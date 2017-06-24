@@ -283,9 +283,9 @@ class DBManager extends SQLiteOpenHelper {
         return retPath;
     }
 
-    public Bitmap loadPic_FROM_ID_5(){
+    public Bitmap loadPic_FROM_ID_6(){
         Bitmap retPic = null;
-        String[] whereArgs = new String[]{ String.valueOf(5) };
+        String[] whereArgs = new String[]{ String.valueOf(6) };
         String whereClause = TOUR_ID + "=?";
         Cursor c = db.query(PICTURES, null, whereClause, whereArgs, null, null, null);
         while(c.moveToNext()){

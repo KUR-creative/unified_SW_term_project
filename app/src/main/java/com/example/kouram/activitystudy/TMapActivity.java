@@ -1,3 +1,4 @@
+/*
 package com.example.kouram.activitystudy;
 
 import android.Manifest;
@@ -171,8 +172,7 @@ public class TMapActivity extends AppCompatActivity {
         return distance;
     }
 
-    double getDistance(TMapPoint a, TMapPoint b)
-    {
+    double getDistance(TMapPoint a, TMapPoint b) {
         float[] result = new float[1];
         Location.distanceBetween(a.getLatitude(), a.getLongitude(),
                                  b.getLatitude(), b.getLongitude(),
@@ -487,8 +487,7 @@ public class TMapActivity extends AppCompatActivity {
         }
     }
 
-    private double distancePointToLine(TMapPoint point, TMapPoint lineStart, TMapPoint lineEnd)
-    {
+    private double distancePointToLine(TMapPoint point, TMapPoint lineStart, TMapPoint lineEnd) {
         TMapPoint a; // p 와 p1, p2 를 지나는 직선과의 교점
         double ax;
         double ay;
@@ -546,8 +545,7 @@ public class TMapActivity extends AppCompatActivity {
         }
     }
 
-    double getMin(double d1, double d2)
-    {
+    double getMin(double d1, double d2) {
         if (d1 < d2) {
             return d1;
         } else{
@@ -555,8 +553,7 @@ public class TMapActivity extends AppCompatActivity {
         }
     }
 
-    double getMax(double d1, double d2)
-    {
+    double getMax(double d1, double d2) {
         if (d1 > d2) {
             return d1;
         } else {
@@ -612,8 +609,7 @@ public class TMapActivity extends AppCompatActivity {
             }
         });
     }
-    private void doTakePhotoAction()
-    {
+    private void doTakePhotoAction() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // 임시로 사용할 파일의 경로를 생성
@@ -627,8 +623,7 @@ public class TMapActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode != RESULT_OK) {
             return;
         }
@@ -664,3 +659,4 @@ public class TMapActivity extends AppCompatActivity {
         }
     }
 }
+*/
