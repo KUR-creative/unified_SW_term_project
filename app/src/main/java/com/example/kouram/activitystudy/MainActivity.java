@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
@@ -41,7 +42,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
-    private DBManager       dbManager   = new DBManager(this, "test07.db", null, 1); // version은 내 맘대로 함.
+    private DBManager       dbManager   = new DBManager(this, "test09.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
     private TextToSpeech tts;
@@ -64,9 +65,11 @@ public class MainActivity extends AppCompatActivity {
             if(pathOnMap != null){
                 if( isUserInTTSPoint(lat, lon, pathOnMap, navigationInfos) ){
                     // 경로 안내
-                    if(navigationInfos.get(routeNum).right.contains("이동")) {
-                        tts.speak(navigationInfos.get(routeNum).right, TextToSpeech.QUEUE_FLUSH, null);
+                    String navigationStr = navigationInfos.get(routeNum).right;
+                    if(navigationStr.contains("이동")) {
+                        tts.speak(navigationStr, TextToSpeech.QUEUE_FLUSH, null);
                     }
+                    navigationText.setText(navigationStr); // TODO: need field test!!!
                     routeNum++;
                 }
                 // 유저가 경로에서 벗어났음.
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private LocationManager locationManager;
+    private TextView navigationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
         initTTS();
         initTMap();
         initButtons();
+
+        navigationText = (TextView)findViewById(R.id.navigationText);
     }
 
     @Override
@@ -190,6 +196,27 @@ public class MainActivity extends AppCompatActivity {
                                 new Tuple<Double,Double>(mapView.getLatitude(),
                                                          mapView.getLongitude()));
                 startActivityForResult(intent, GET_PATH_NAVI_DATA);
+            }
+        });
+
+        Button saveTourBtn = (Button)findViewById(R.id.save_tour_btn);
+        saveTourBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // tour = current path + nav info + pictures + some text
+                if(pathOnMap != null && navigationInfos != null){
+                    if(tourManager.hasCurrentWorkingTour()){
+                                dbManager.select();
+                        tourManager.saveAndDiscardCurrentTour(dbManager);
+                        //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
+                        // 하지만 지금은 tour가 겹쳐서 저장될 수 있음.
+                        // 조치가 필요함.
+                                dbManager.select();
+                        return;
+                    }
+                }
+                Toast.makeText(context, "현재 저장할 수 있는 '여행'이 없습니다.",
+                               Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -504,14 +531,15 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode == GET_PATH_NAVI_DATA){
             ArrayList<Tuple<Double,Double>> pathData;
             pathData = (ArrayList<Tuple<Double, Double>>)
-                            data.getSerializableExtra(PATH_DATA);
+                       data.getSerializableExtra(PATH_DATA);
 
             // TODO: 언제 discard할까? 다시 경로를 생성할 때. 혹은 tour를 불러올 때.
             pathOnMap = Tools.convertFrom(pathData);
             displayPathOnMap(Tools.getPathFrom(pathOnMap));
 
             navigationInfos = (ArrayList<Tuple<Integer, String>>)
-                    data.getSerializableExtra(NAVI_DATA);
+                              data.getSerializableExtra(NAVI_DATA);
+            tourManager.createNewTour("temp-name", pathOnMap, navigationInfos);
         }
         /*
         else if(requestCode == ACT_TEST){

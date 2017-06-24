@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
@@ -43,8 +44,12 @@ public class GetPathActivity extends AppCompatActivity {
             // get pass list (optional)
             // get end point
                 // TODO: 만일 currentRadius == 0이라면: finish하지 않음..!
-                if(currentRadius == 0)
-                    throw new RuntimeException("currentRadius == 0: 이거 지워라. 테스트 끝나고.,");
+                if(currentRadius == 0) {
+                    Toast.makeText(GetPathActivity.this,
+                                   "먼저 반경을 선택하십시오.",
+                                   Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 TMapPoint end = Tools.getRandPointAtCircle(start, currentRadius);
 
             // add to routeManager.
@@ -60,11 +65,6 @@ public class GetPathActivity extends AppCompatActivity {
                 ArrayList<Tuple<Integer,String>> naviInfos = pathNaviData.right;
 
             // finish!
-                //ArrayList<Tuple<Double,Double>> pathDataList = new ArrayList<Tuple<Double, Double>>();
-                //for(TMapPoint point : points){
-                    //pathDataList.add(new Tuple<Double, Double>(point.getLatitude(),
-                                                               //point.getLongitude()));
-                //}
                 ArrayList<Tuple<Double,Double>> pathDataList = Tools.convertFromPointList(points);
 
                 Intent outIntent = getIntent();
