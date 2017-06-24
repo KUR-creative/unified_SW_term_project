@@ -94,7 +94,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/set_radius_btn"
                     android:layout_width="113dp"
                     android:layout_height="match_parent"
                     android:text="반경설정" />
