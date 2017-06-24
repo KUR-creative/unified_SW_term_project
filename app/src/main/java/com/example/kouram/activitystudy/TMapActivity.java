@@ -42,7 +42,7 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
     private RouteManager    routeManager= new RouteManager();
-    private DBManager       dbManager   = new DBManager(this, "test06.db", null, 1); // version은 내 맘대로 함.
+    private DBManager       dbManager   = new DBManager(this, "test07.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
     private TextToSpeech tts;
@@ -310,6 +310,14 @@ public class TMapActivity extends AppCompatActivity {
         });
 
         initCamera(); // for button.
+
+        Button savePicBtn = (Button)findViewById(R.id.save_pic_btn);
+        savePathBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void setLocationManager(TMapView map) {

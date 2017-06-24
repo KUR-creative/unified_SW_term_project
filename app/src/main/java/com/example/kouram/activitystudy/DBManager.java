@@ -89,13 +89,23 @@ class DBManager extends SQLiteOpenHelper {
                 "  string       TEXT," +
                 "  latitude     REAL," +
                 "  longitude    REAL," +
-                "  path_id      INTEGER," +
+                "  tour_id      INTEGER," +
+                "  FOREIGN KEY(path_id) REFERENCES paths(_id) );";
+
+        String picturesSql =
+                "CREATE TABLE IF NOT EXISTS " +
+                "pictures(" +
+                "  picture      BLOB," +
+                "  latitude     REAL," +
+                "  longitude    REAL," +
+                "  tour_id      INTEGER," +
                 "  FOREIGN KEY(path_id) REFERENCES paths(_id) );";
 
         tmpDB.execSQL(toursSql);
         tmpDB.execSQL(pathsSql);
         tmpDB.execSQL(descriptionsSql);
         tmpDB.execSQL(textsSql);
+        tmpDB.execSQL(picturesSql);
         db = tmpDB;
     }
 
