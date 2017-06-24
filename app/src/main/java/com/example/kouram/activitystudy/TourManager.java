@@ -12,15 +12,6 @@ import java.util.ArrayList;
  */
 
 class TourManager {
-    public void addLinkedPicture(TMapPoint point, Bitmap bitmap) {
-        if(currentTour == null){
-            throw new RuntimeException("need to create tour first. call createNewTour");
-        }
-        Tuple<TMapPoint,Bitmap> tuple = new Tuple<>(point, bitmap);
-        System.out.println("now bmp added!");
-        currentTour.linkedPics.add(tuple);
-    }
-
     class Tour {
         // 필수 field: 없으면 저장 불가능.
         String                                  name        = null;
@@ -30,6 +21,16 @@ class TourManager {
         ArrayList< Tuple<TMapPoint,Bitmap> >    linkedPics  = new ArrayList<>();
         ArrayList< Tuple<TMapPoint,String> >    linkedTexts = new ArrayList<>();
     }
+
+    public void addLinkedPicture(TMapPoint point, Bitmap bitmap) {
+        if(currentTour == null){
+            throw new RuntimeException("need to create tour first. call createNewTour");
+        }
+        Tuple<TMapPoint,Bitmap> tuple = new Tuple<>(point, bitmap);
+        System.out.println("now bmp added!");
+        currentTour.linkedPics.add(tuple);
+    }
+
 
     private Tour currentTour = null;
     public void createNewTour(String name,
@@ -90,4 +91,12 @@ class TourManager {
         discardCurrentTour();
     }
 
+    /*
+    // it's not ordinary tour!
+    public Tour loadTour(DBManager db, int id){
+        Tour tour = new Tour();
+        tour.path = db.loadPath(id);
+        return tour;
+    }
+    */
 }

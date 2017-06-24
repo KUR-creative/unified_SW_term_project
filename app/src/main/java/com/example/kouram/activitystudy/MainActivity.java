@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,7 +23,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Tuple<Integer,String>>    navigationInfos = null;
 
     private final int ttsCallFrequency = 10;
-    private int outOfPathCount = 0;
+    private long outOfPathCount = 0;
     final MainActivity context = this;
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isUserOutOfThePath(lat, lon, pathOnMap)) {
                     if( outOfPathCount % ttsCallFrequency == 0 ) {
                         tts.speak("길에서 벗어났습니다. 앱을 켜고 지도를 보십시오.", TextToSpeech.QUEUE_FLUSH, null);
+                        //outOfPathCount = 1; // test.
                     }
                     outOfPathCount++;
                 }
@@ -117,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         initButtons();
 
         navigationText = (TextView)findViewById(R.id.navigationText);
+
+        initCamera();
     }
 
     @Override
@@ -224,8 +225,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                 int num = dbManager.getNumOfRowInTours();
-                intent.putExtra("num-row", num);
-                startActivity(intent);
+                intent.putExtra(ROUTE_ID, num);
+                startActivityForResult(intent, GET_ROUTE_ID);
             }
         });
     }
@@ -476,18 +477,19 @@ public class MainActivity extends AppCompatActivity {
     private static final int GET_PATH_NAVI_DATA = 0;
     private static final int PICK_FROM_CAMERA   = 1;
     private static final int CROP_FROM_CAMERA   = 2;
-    private static final int GET_HISTORY_ROUTE  = 3;
+    private static final int GET_ROUTE_ID       = 3;
 
     public static final String PATH_DATA = "path-data";
     public static final String NAVI_DATA = "navi-data";
+    public static final String ROUTE_ID  = "route-id";
 
     private Uri mImageCaptureUri;
-    private ImageView photoImageView;
+    //private ImageView photoImageView;
     private Button mButton;
 
     private void initCamera(){
         mButton = (Button) findViewById(R.id.get_pic_btn);
-        photoImageView = (ImageView) findViewById(R.id.image);
+        //photoImageView = (ImageView) findViewById(R.id.image);
 
         mButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -525,8 +527,8 @@ public class MainActivity extends AppCompatActivity {
 
             intent.putExtra("outputX", 242);
             intent.putExtra("outputY", 242);
-            intent.putExtra("aspectX", photoImageView.getX());
-            intent.putExtra("aspectY", photoImageView.getY());
+            //intent.putExtra("aspectX", photoImageView.getX());
+            //intent.putExtra("aspectY", photoImageView.getY());
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, CROP_FROM_CAMERA);
@@ -536,7 +538,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (extras != null) {
                 cropedPhoto = extras.getParcelable("data");
-                photoImageView.setImageBitmap(cropedPhoto);
+                //photoImageView.setImageBitmap(cropedPhoto);
             }
 
             // 임시 파일 삭제
@@ -558,12 +560,15 @@ public class MainActivity extends AppCompatActivity {
                               data.getSerializableExtra(NAVI_DATA);
             tourManager.createNewTour("temp-name", pathOnMap, navigationInfos);
         }
-        /*
-        else if(requestCode == ACT_TEST){
-            String str = data.getStringExtra("test");
-            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
-            //"get path intent TEST!!!"
+        else if(requestCode == GET_ROUTE_ID){
+            int id = data.getIntExtra(ROUTE_ID, -1);
+            //System.out.println(id);
+
+            // preview! - 그저 그리기만 할 뿐이다.
+            clearMap();
+            TMapPolyLine path = Tools.getPathFrom(dbManager.loadPath(id));
+            displayPathOnMap(path);
+            // and pics... or more..
         }
-        */
     }
 }
