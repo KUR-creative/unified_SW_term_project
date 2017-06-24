@@ -107,14 +107,16 @@ class DBManager extends SQLiteOpenHelper {
     public void insert(TourManager.Tour tour){
         int tourID = getNumOfRowInTours();
 
+        // insert tour
         ContentValues values = new ContentValues();
         values.put(_ID, tourID);
         values.put(NAME, tour.name);
         db.insert(TOURS, null, values);
 
-        System.out.println("-----> tour id = " + tourID);
+        //System.out.println("-----> tour id = " + tourID);
         insert(tour.path, tourID);
 
+        // insert navigation informations.
         ArrayList< Tuple<Integer,String> >
                 naviInfoTuples = tour.naviInfos;
         for(Tuple<Integer,String> naviInfo : naviInfoTuples){
