@@ -5,12 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 
 import com.skp.Tmap.TMapPoint;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -42,6 +45,8 @@ class DBManager extends SQLiteOpenHelper {
     private static final String TEXTS       = "texts";
     private static final String STRING      = "string";
 
+    private static final String PICTURES    = "pictures";
+    private static final String PICTURE     = "picture";
 
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
@@ -90,7 +95,7 @@ class DBManager extends SQLiteOpenHelper {
                 "  latitude     REAL," +
                 "  longitude    REAL," +
                 "  tour_id      INTEGER," +
-                "  FOREIGN KEY(path_id) REFERENCES paths(_id) );";
+                "  FOREIGN KEY(tour_id) REFERENCES tours(_id) );";
 
         String picturesSql =
                 "CREATE TABLE IF NOT EXISTS " +
@@ -99,7 +104,7 @@ class DBManager extends SQLiteOpenHelper {
                 "  latitude     REAL," +
                 "  longitude    REAL," +
                 "  tour_id      INTEGER," +
-                "  FOREIGN KEY(path_id) REFERENCES paths(_id) );";
+                "  FOREIGN KEY(tour_id) REFERENCES tours(_id) );";
 
         tmpDB.execSQL(toursSql);
         tmpDB.execSQL(pathsSql);
@@ -132,6 +137,13 @@ class DBManager extends SQLiteOpenHelper {
         for(Tuple<Integer,String> naviInfo : naviInfoTuples){
             insert(naviInfo.left, naviInfo.right, tourID);
         }
+
+        // insert pictures.
+        ArrayList< Tuple<TMapPoint,Bitmap> >
+                linkedPics = tour.linkedPics;
+        for(Tuple<TMapPoint,Bitmap> linkedPic : linkedPics){
+            insert(linkedPic.left, linkedPic.right, tourID);
+        }
     }
 
     // 나중에 tour를 저장하는 insert에서 호출된다.
@@ -144,6 +156,33 @@ class DBManager extends SQLiteOpenHelper {
             values.put(TOUR_ID, tour_id);
             db.insert(PATHS, null, values);
         }
+    }
+
+    public void insert(TMapPoint point, Bitmap bitmap, int tour_id){
+        byte[] blob = getBlobDataFrom(bitmap);
+        ContentValues values = new ContentValues();
+        values.put(PICTURE, blob);
+        values.put(LATITUDE, point.getLatitude());
+        values.put(LONGITUDE, point.getLongitude());
+        values.put(TOUR_ID, tour_id);
+        db.insert(PICTURES, null, values);
+    }
+
+    private byte[] getBlobDataFrom(Bitmap bitmap) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(bitmap);
+            oos.flush();
+            oos.close();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("error in getBlobDataFrom(Bitmap) !");
+        }
+
+        return bos.toByteArray();
     }
 
     public void insert(String string, TMapPoint point){
@@ -206,6 +245,24 @@ class DBManager extends SQLiteOpenHelper {
                      TOUR_ID + " = " + tour_id
             + ", " + PATH_INDEX + " = " + path_index
             + ", " + DESCRIPTION + " = " + description);
+        }
+        c.close();
+        }
+
+        System.out.println("------------------PICTURES----------------");
+        {
+        Cursor c = db.query(PICTURES, null, null, null, null, null, null, null);
+        while (c.moveToNext()) {
+            int tour_id = c.getInt(c.getColumnIndex(TOUR_ID));
+            double latitude = c.getDouble(c.getColumnIndex(LATITUDE));
+            double longitude = c.getDouble(c.getColumnIndex(LONGITUDE));
+            byte[] blob = c.getBlob(c.getColumnIndex(PICTURE));
+
+            System.out.println(
+                    TOUR_ID + " = " + tour_id
+                            + ", " + LATITUDE + " = " + latitude
+                            + ", " + LONGITUDE + " = " + longitude
+                            + ", " + PICTURE + " = " + blob);
         }
         c.close();
         }

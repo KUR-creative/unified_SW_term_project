@@ -12,14 +12,23 @@ import java.util.ArrayList;
  */
 
 class TourManager {
+    public void addLinkedPicture(TMapPoint point, Bitmap bitmap) {
+        if(currentTour == null){
+            throw new RuntimeException("need to create tour first. call createNewTour");
+        }
+        Tuple<TMapPoint,Bitmap> tuple = new Tuple<>(point, bitmap);
+        System.out.println("now bmp added!");
+        currentTour.linkedPics.add(tuple);
+    }
+
     class Tour {
         // 필수 field: 없으면 저장 불가능.
         String                                  name        = null;
         ArrayList< TMapPoint >                  path        = null;
         ArrayList< Tuple<Integer,String> >      naviInfos   = null;
         // optionals.
-        ArrayList< Tuple<TMapPoint,Bitmap> >    linkedPics  = null;
-        ArrayList< Tuple<TMapPoint,String> >    linkedTexts = null;
+        ArrayList< Tuple<TMapPoint,Bitmap> >    linkedPics  = new ArrayList<>();
+        ArrayList< Tuple<TMapPoint,String> >    linkedTexts = new ArrayList<>();
     }
 
     private Tour currentTour = null;

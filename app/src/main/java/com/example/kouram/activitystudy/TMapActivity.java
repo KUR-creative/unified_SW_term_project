@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -292,30 +293,55 @@ public class TMapActivity extends AppCompatActivity {
         });
 
         //================== tests for tour ==================
+        Button createTourBtn = (Button)findViewById(R.id.create_tour_btn);
+        createTourBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // tour = current path + nav info + pictures + some text
+                if(pathOnMap != null && navigationInfos != null){
+                    tourManager.createNewTour("tour-name", pathOnMap, navigationInfos);
+                }else{
+                    Toast.makeText(thisContext, "no current path.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         Button saveTourBtn = (Button)findViewById(R.id.save_tour_btn);
         saveTourBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // tour = current path + nav info + pictures + some text
                 if(pathOnMap != null && navigationInfos != null){
-                    tourManager.createNewTour("tour-name", pathOnMap, navigationInfos);
-                    tourManager.saveAndDiscardCurrentTour(dbManager);
-                    //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
-                    // 하지만 지금은 tour가 겹쳐서 저장될 수 있음.
-                    // 조치가 필요함.
-                }else{
-                    Toast.makeText(thisContext, "no current tour.", Toast.LENGTH_SHORT).show();
+                    if(tourManager.hasCurrentWorkingTour()){
+                        tourManager.saveAndDiscardCurrentTour(dbManager);
+                        //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
+                        // 하지만 지금은 tour가 겹쳐서 저장될 수 있음.
+                        // 조치가 필요함.
+                        return;
+                    }
                 }
+                Toast.makeText(thisContext, "no current tour.", Toast.LENGTH_SHORT).show();
             }
         });
 
         initCamera(); // for button.
 
+        // test for db. in real case, you need to use TourManager.
         Button savePicBtn = (Button)findViewById(R.id.save_pic_btn);
-        savePathBtn.setOnClickListener(new View.OnClickListener() {
+        savePicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(pathOnMap != null){
+                    Drawable drawable = photoImageView.getDrawable();
+                    if(drawable != null){
+                        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+                        tourManager.addLinkedPicture(mapView.getLocationPoint(), bitmap);
+                    }else{
+                        Toast.makeText(thisContext, "get picture first!", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(thisContext, "create tour first!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -562,12 +588,12 @@ public class TMapActivity extends AppCompatActivity {
     private static final int CROP_FROM_CAMERA = 2;
 
     private Uri mImageCaptureUri;
-    private ImageView mPhotoImageView;
+    private ImageView photoImageView;
     private Button mButton;
 
     private void initCamera(){
         mButton = (Button) findViewById(R.id.get_pic_btn);
-        mPhotoImageView = (ImageView) findViewById(R.id.image);
+        photoImageView = (ImageView) findViewById(R.id.image);
 
         mButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -602,7 +628,7 @@ public class TMapActivity extends AppCompatActivity {
 
             if (extras != null) {
                 Bitmap photo = extras.getParcelable("data");
-                mPhotoImageView.setImageBitmap(photo);
+                photoImageView.setImageBitmap(photo);
             }
 
             // 임시 파일 삭제
@@ -620,8 +646,8 @@ public class TMapActivity extends AppCompatActivity {
 
             intent.putExtra("outputX", 242);
             intent.putExtra("outputY", 242);
-            intent.putExtra("aspectX", mPhotoImageView.getX());
-            intent.putExtra("aspectY", mPhotoImageView.getY());
+            intent.putExtra("aspectX", photoImageView.getX());
+            intent.putExtra("aspectY", photoImageView.getY());
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, CROP_FROM_CAMERA);
