@@ -60,11 +60,12 @@ public class GetPathActivity extends AppCompatActivity {
                 ArrayList<Tuple<Integer,String>> naviInfos = pathNaviData.right;
 
             // finish!
-                ArrayList<Tuple<Double,Double>> pathDataList = new ArrayList<Tuple<Double, Double>>();
-                for(TMapPoint point : points){
-                    pathDataList.add(new Tuple<Double, Double>(point.getLatitude(),
-                                                               point.getLongitude()));
-                }
+                //ArrayList<Tuple<Double,Double>> pathDataList = new ArrayList<Tuple<Double, Double>>();
+                //for(TMapPoint point : points){
+                    //pathDataList.add(new Tuple<Double, Double>(point.getLatitude(),
+                                                               //point.getLongitude()));
+                //}
+                ArrayList<Tuple<Double,Double>> pathDataList = Tools.convertFromPointList(points);
 
                 Intent outIntent = getIntent();
                 outIntent.putExtra(MainActivity.PATH_DATA, pathDataList);

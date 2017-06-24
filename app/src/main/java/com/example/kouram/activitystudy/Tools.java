@@ -5,6 +5,8 @@ import com.skp.Tmap.TMapPolyLine;
 
 import java.util.ArrayList;
 
+import static android.R.attr.pathData;
+
 /**
  * Created by Ko U Ram on 2017-06-21.
  */
@@ -43,5 +45,24 @@ public class Tools {
             path.addLinePoint(point);
         }
         return path;
+    }
+
+    static
+    public ArrayList<Tuple<Double,Double>> convertFromPointList(ArrayList<TMapPoint> pointList){
+        ArrayList<Tuple<Double,Double>> retList = new ArrayList<Tuple<Double, Double>>();
+        for(TMapPoint point : pointList){
+            retList.add(new Tuple<Double, Double>(point.getLatitude(),
+                    point.getLongitude()));
+        }
+        return retList;
+    }
+
+    static
+    public ArrayList<TMapPoint> convertFrom(ArrayList<Tuple<Double,Double>> xylist){
+        ArrayList<TMapPoint> pointList = new ArrayList<>();
+        for(Tuple<Double,Double> xy : xylist){
+            pointList.add( new TMapPoint(xy.left, xy.right) );
+        }
+        return pointList;
     }
 }

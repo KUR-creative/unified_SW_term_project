@@ -505,16 +505,13 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Tuple<Double,Double>> pathData;
             pathData = (ArrayList<Tuple<Double, Double>>)
                             data.getSerializableExtra(PATH_DATA);
-            for(Tuple<Double,Double> tuple : pathData){
-                System.out.println("lat = " + tuple.left + ", lon = " + tuple.right);
-            }
 
-            ArrayList<Tuple<Integer,String>> naviData;
-            naviData = (ArrayList<Tuple<Integer, String>>)
+            // TODO: 언제 discard할까? 다시 경로를 생성할 때. 혹은 tour를 불러올 때.
+            pathOnMap = Tools.convertFrom(pathData);
+            displayPathOnMap(Tools.getPathFrom(pathOnMap));
+
+            navigationInfos = (ArrayList<Tuple<Integer, String>>)
                     data.getSerializableExtra(NAVI_DATA);
-            for(Tuple<Integer,String> tuple : naviData){
-                System.out.println("index = " + tuple.left + ", str = " + tuple.right);
-            }
         }
         /*
         else if(requestCode == ACT_TEST){
