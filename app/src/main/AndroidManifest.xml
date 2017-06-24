@@ -23,9 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TMapActivity" />
         <activity android:name=".GetPathActivity" />
-        <activity android:name=".PopUpActivity"></activity>
+        <activity
+            android:name=".PopUpActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

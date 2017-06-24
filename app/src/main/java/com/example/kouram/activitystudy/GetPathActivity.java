@@ -22,5 +22,17 @@ public class GetPathActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
+        Button getPathBtn = (Button)findViewById(R.id.get_path_btn);
+        getPathBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent outIntent = getIntent();
+                outIntent.putExtra("test", "get path intent TEST!!!");
+                setResult(RESULT_OK, outIntent);
+                finish();
+            }
+        });
+
     }
 }

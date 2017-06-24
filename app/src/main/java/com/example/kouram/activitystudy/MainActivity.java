@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, ACT_TEST);
             }
         });
     }
@@ -425,6 +425,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private static final int ACT_TEST = 123;
     private static final int PICK_FROM_CAMERA = 0;
     private static final int CROP_FROM_CAMERA = 2;
 
@@ -491,6 +492,11 @@ public class MainActivity extends AppCompatActivity {
             if (f.exists()) {
                 f.delete();
             }
+        }
+        else if(requestCode == ACT_TEST){
+            String str = data.getStringExtra("test");
+            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+            //"get path intent TEST!!!"
         }
     }
 }
