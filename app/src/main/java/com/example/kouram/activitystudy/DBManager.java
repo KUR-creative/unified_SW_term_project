@@ -106,6 +106,12 @@ class DBManager extends SQLiteOpenHelper {
 
     public void insert(TourManager.Tour tour){
         int tourID = getNumOfRowInTours();
+
+        ContentValues values = new ContentValues();
+        values.put(_ID, tourID);
+        values.put(NAME, tour.name);
+        db.insert(TOURS, null, values);
+
         System.out.println("-----> tour id = " + tourID);
         insert(tour.path, tourID);
 
@@ -115,6 +121,7 @@ class DBManager extends SQLiteOpenHelper {
             insert(naviInfo.left, naviInfo.right, tourID);
         }
     }
+
     // 나중에 tour를 저장하는 insert에서 호출된다.
     // insert Path
     public void insert(ArrayList<TMapPoint> path, int tour_id){

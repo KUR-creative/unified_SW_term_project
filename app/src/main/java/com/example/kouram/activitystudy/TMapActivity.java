@@ -36,7 +36,7 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
     private RouteManager    routeManager= new RouteManager();
-    private DBManager       dbManager   = new DBManager(this, "test05.db", null, 1); // version은 내 맘대로 함.
+    private DBManager       dbManager   = new DBManager(this, "test06.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
     private TextToSpeech tts;
