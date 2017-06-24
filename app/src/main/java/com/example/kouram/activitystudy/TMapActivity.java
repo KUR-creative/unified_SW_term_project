@@ -32,17 +32,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class TMapActivity extends AppCompatActivity {
-    private DBManager dbManager;
 
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
-    private RouteManager routeManager = new RouteManager();
+    private RouteManager    routeManager= new RouteManager();
+    private DBManager       dbManager   = new DBManager(this, "test02.db", null, 1); // version은 내 맘대로 함.
+    private TourManager     tourManager = new TourManager();
+
     private TextToSpeech tts;
 
     // map을 위한 정보들 - 없으면 아직 path가 없는 것.
     // path를 그리기 위한 데이터 / navigation을 위한 데이터
     private ArrayList<TMapPoint> pathOnMap = null;
-    private ArrayList<Tuple<Integer,String>> navigationInfo = null;
+    private ArrayList<Tuple<Integer,String>> navigationInfos = null;
 
     final TMapActivity thisContext = this;
     private final LocationListener locationListener = new LocationListener() {
@@ -53,7 +55,7 @@ public class TMapActivity extends AppCompatActivity {
 
             //TODO: 그래서 path가 discard되면 pathOnMap = null로 해야 함.
             if(pathOnMap != null){
-                checkUserLocation(lat, lon, pathOnMap, navigationInfo);
+                checkUserLocation(lat, lon, pathOnMap, navigationInfos);
             }else{
                 //Toast.makeText(thisContext, "GPS ELSE!!!.", Toast.LENGTH_SHORT).show();
             }
@@ -95,7 +97,6 @@ public class TMapActivity extends AppCompatActivity {
     }
 
     private void initDB() {
-        dbManager = new DBManager(this, "test00.db", null, 1); // version은 내 맘대로 함.
         SQLiteDatabase db = dbManager.getWritableDatabase();
         dbManager.onCreate(db);
     }
@@ -130,7 +131,7 @@ public class TMapActivity extends AppCompatActivity {
                 if(! routeManager.hasCurrentWorkingRoute()){
                     routeManager.createNewRoute();
                 }
-                routeManager.addPoint(point);
+                routeManager.add(point);
             }
         });
 
@@ -142,16 +143,17 @@ public class TMapActivity extends AppCompatActivity {
                 System.out.println("get-route");
                 Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> >
                         pathDataTuple = routeManager.getPathData();
+
                 if(pathDataTuple != null){
                     TMapPolyLine path = pathDataTuple.left;
                     pathOnMap = path.getLinePoint();
-                    navigationInfo = routeManager.getPathData().right;
+                    navigationInfos = routeManager.getPathData().right;
+
                     displayPathOnMap(path);
                     routeManager.discardCurrentRoute();
                 }else{
                     Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
@@ -169,8 +171,8 @@ public class TMapActivity extends AppCompatActivity {
                 if(! routeManager.hasCurrentWorkingRoute()){
                     routeManager.createNewRoute();
                 }
-                routeManager.addPoint(centerPoint);
-                routeManager.addPoint(randPoint);
+                routeManager.add(centerPoint);
+                routeManager.add(randPoint);
             }
         });
 
@@ -234,7 +236,12 @@ public class TMapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // tour = current path + nav info + pictures + some text
-                //tourManager.save(tour);
+                if(pathOnMap != null && navigationInfos != null){
+                    tourManager.createNewTour();
+                    tourManager.setCurrentEssentialValues(pathOnMap, navigationInfos);
+                    tourManager.saveAndDiscardCurrentTour(dbManager);
+                    //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
+                }
             }
         });
     }

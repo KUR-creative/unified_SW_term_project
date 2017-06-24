@@ -34,7 +34,7 @@ public class RouteManager {
         route.clear();
     }
 
-    public void addPoint(TMapPoint point) {
+    public void add(TMapPoint point) {
         if(hasCurrentRoute == false){
             throw new RuntimeException("need to create route first. call createNewRoute");
         }

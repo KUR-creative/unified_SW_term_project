@@ -43,6 +43,13 @@ class DBManager extends SQLiteOpenHelper {
 
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
+        initTourID();
+    }
+
+    private int tourID; // 현재 insert 가능한 id.
+    private int initTourID() {
+        // select해서 최대 _id + 1 한 값이 되어야 함.
+        return tourID;
     }
 
     /*
@@ -91,6 +98,9 @@ class DBManager extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void insert(TourManager.Tour tour){
+        insert(tour.path, -1);
+    }
     // 나중에 tour를 저장하는 insert에서 호출된다.
     // insert Path
     public void insert(ArrayList<TMapPoint> points, int tour_id){

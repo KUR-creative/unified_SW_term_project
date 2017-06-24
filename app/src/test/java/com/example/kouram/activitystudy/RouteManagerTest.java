@@ -19,10 +19,11 @@ public class RouteManagerTest {
         try{
             rm.createNewRoute();
             fail("routeManager는 반드시 한번에 하나의 path만 작업합니다.");
-        }catch (RuntimeException e){
+        } catch(RuntimeException e){
             // fine, as expected.
         }
     }
+
     @Test
     public void If_path_job_is_end_then_You_can_create_new_path(){
         RouteManager rm = new RouteManager();
@@ -42,7 +43,7 @@ public class RouteManagerTest {
 
         try{
             TMapPoint point = new TMapPoint(1.0, 2.0);
-            rm.addPoint(point);
+            rm.add(point);
             fail("현재 생성된 route가 있어야지만 호출할 수 있습니다");
         }catch (RuntimeException e){
             // fine, as expected.
@@ -50,7 +51,7 @@ public class RouteManagerTest {
 
         rm.createNewRoute();
         TMapPoint point = new TMapPoint(1.0, 2.0);
-        rm.addPoint(point);
+        rm.add(point);
     }
 
     @Test
@@ -60,15 +61,15 @@ public class RouteManagerTest {
         rm.createNewRoute();
         //when:
         TMapPoint point = new TMapPoint(1.0, 2.0);
-        rm.addPoint(point);
+        rm.add(point);
         //then:
         assertEquals(rm.getNumOfPointInRoute(), 1);
 
         // and when add more points
-        rm.addPoint(point);
-        rm.addPoint(point);
-        rm.addPoint(point);
-        rm.addPoint(point);
+        rm.add(point);
+        rm.add(point);
+        rm.add(point);
+        rm.add(point);
         // then
         assertEquals(rm.getNumOfPointInRoute(), 5);
 
