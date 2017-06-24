@@ -26,9 +26,9 @@
         <activity android:name=".GetPathActivity" />
         <activity
             android:name=".PopUpActivity"
-            android:theme="@android:style/Theme.Dialog"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog"></activity>
+        <activity android:name=".HistoryActivity"></activity>
     </application>
 
 </manifest>

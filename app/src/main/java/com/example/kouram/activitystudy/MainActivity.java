@@ -217,6 +217,17 @@ public class MainActivity extends AppCompatActivity {
                                Toast.LENGTH_SHORT).show();
             }
         });
+
+        Button historyBtn = (Button)findViewById(R.id.history_btn);
+        historyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                int num = dbManager.getNumOfRowInTours();
+                intent.putExtra("num-row", num);
+                startActivity(intent);
+            }
+        });
     }
 
     private void clearMap(){
@@ -465,6 +476,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GET_PATH_NAVI_DATA = 0;
     private static final int PICK_FROM_CAMERA   = 1;
     private static final int CROP_FROM_CAMERA   = 2;
+    private static final int GET_HISTORY_ROUTE  = 3;
 
     public static final String PATH_DATA = "path-data";
     public static final String NAVI_DATA = "navi-data";

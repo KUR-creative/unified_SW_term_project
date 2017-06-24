@@ -266,6 +266,18 @@ class DBManager extends SQLiteOpenHelper {
         return numOfRow;
     }
 
+    /*
+    public ArrayList<String> getTourSummaries(){
+        ArrayList<String> retStrs = new ArrayList<>();
+        Cursor c = db.query(TOURS, null, null, null, null, null, null, null);
+        while (c.moveToNext()) {
+            String text = c.getString(c.getColumnIndex(STRING));
+            int id =
+        }
+        c.close();
+    }
+    */
+
     // TODO: 만일 table에 맞는 id가 없다면?
     public ArrayList<TMapPoint> loadPath(int _id) {  //just for test...!
         ArrayList<TMapPoint> retPath = new ArrayList<>();
