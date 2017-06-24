@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity2);
-        //setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity2);
+        setContentView(R.layout.activity_main);
 
         initDB();
         initTTS();
@@ -179,183 +179,15 @@ public class MainActivity extends AppCompatActivity {
         return result[0];
     }
 
-    //private void initButtons() {}
-    //*
     private void initButtons() {
-        Button addMarkerBtn = (Button) findViewById(R.id.add_marker_btn);
-        addMarkerBtn.setOnClickListener(new View.OnClickListener(){
+        Button getRouteBtn = (Button)findViewById(R.id.routeMenu);
+        getRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("add-marker");
-                TMapPoint point = mapView.getCenterPoint();
-                addMarker(point.getLatitude(), point.getLongitude(), "My Marker");
 
-                if(! routeManager.hasCurrentWorkingRoute()){
-                    routeManager.createNewRoute();
-                }
-                routeManager.add(point);
-            }
-        });
-
-        Button routeBtn = (Button) findViewById(R.id.get_route_btn);
-        routeBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                System.out.println("get-route");
-                Tuple<TMapPolyLine, ArrayList<Tuple<Integer,String>> >
-                        pathDataTuple = routeManager.getPathData();
-
-                if(pathDataTuple != null){
-                    TMapPolyLine path = pathDataTuple.left;
-                    pathOnMap = path.getLinePoint();
-                    navigationInfos = routeManager.getPathData().right;
-                    System.out.println("distance = " + getDistance(pathOnMap));
-
-                    displayPathOnMap(path);
-                    routeManager.discardCurrentRoute();
-                }else{
-                    Toast.makeText(context, "add more point.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // 테스트용. 현재 중앙 좌표와 함께 일정 거리에 있는 무작위 좌표 하나를 Route에 추가한다.
-        // path를 만들지는 않으니까 보고 싶으면 path 버튼으로 보셈.
-        // route와 path를 만들고 discard는 하지 않는다.
-        Button randBtn = (Button) findViewById(R.id.rand_btn);
-        randBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "it add random Point(on circle) to RouteManager.", Toast.LENGTH_SHORT).show();
-                TMapPoint centerPoint = mapView.getCenterPoint();
-                TMapPoint randPoint = Tools.getRandPointAtCircle(centerPoint, 1000);
-
-                if(! routeManager.hasCurrentWorkingRoute()){
-                    routeManager.createNewRoute();
-                }
-                routeManager.add(centerPoint);
-                routeManager.add(randPoint);
-            }
-        });
-
-        Button poiBtn = (Button)findViewById(R.id.poi_btn);
-        poiBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                searchPOI("카페", 1000, 20);// 1000m 내에서 20개 검색.
-            }
-        });
-
-        //================== tests for DB ==================
-        Button selectBtn = (Button)findViewById(R.id.select_btn);
-        selectBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                System.out.println("call select");
-                dbManager.select();
-            }
-        });
-
-        Button strAndPointToDBBtn = (Button)findViewById(R.id.str_to_db_btn);
-        strAndPointToDBBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("call str to db");
-                TMapPoint point = new TMapPoint(1.1, 2.2);
-                dbManager.insert("text", point);
-            }
-        });
-
-        // just test!
-        Button savePathBtn = (Button)findViewById(R.id.save_btn);
-        savePathBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                System.out.println("call insert");
-                if(pathOnMap != null){
-                    System.out.println("has current path!");
-                    dbManager.insert(pathOnMap, -2);
-                }else{
-                    Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // just test!
-        Button loadPathBtn = (Button)findViewById(R.id.load_path_btn);
-        loadPathBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("call load!");
-                ArrayList<TMapPoint> pointList = dbManager.loadPath(-2);
-                displayPathOnMap( Tools.getPathFrom(pointList) );
-            }
-        });
-
-        //================== tests for tour ==================
-        Button createTourBtn = (Button)findViewById(R.id.create_tour_btn);
-        createTourBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // tour = current path + nav info + pictures + some text
-                if(pathOnMap != null && navigationInfos != null){
-                    tourManager.createNewTour("tour-name", pathOnMap, navigationInfos);
-                }else{
-                    Toast.makeText(context, "no current path.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        Button saveTourBtn = (Button)findViewById(R.id.save_tour_btn);
-        saveTourBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // tour = current path + nav info + pictures + some text
-                if(pathOnMap != null && navigationInfos != null){
-                    if(tourManager.hasCurrentWorkingTour()){
-                        tourManager.saveAndDiscardCurrentTour(dbManager);
-                        //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
-                        // 하지만 지금은 tour가 겹쳐서 저장될 수 있음.
-                        // 조치가 필요함.
-                        return;
-                    }
-                }
-                Toast.makeText(context, "no current tour.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        initCamera(); // for button.
-
-        // test for db. in real case, you need to use TourManager.
-        Button savePicBtn = (Button)findViewById(R.id.save_pic_btn);
-        savePicBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(pathOnMap != null){
-                    Drawable drawable = photoImageView.getDrawable();
-                    if(drawable != null){
-                        //Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-                        tourManager.addLinkedPicture(mapView.getLocationPoint(), cropedPhoto);
-                    }else{
-                        Toast.makeText(context, "get picture first!", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(context, "create tour first!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // just for test!!
-        Button loadPicFROM_ID_5_Btn = (Button)findViewById(R.id.load_pic_btn);
-        loadPicFROM_ID_5_Btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bitmap photo = dbManager.loadPic_FROM_ID_6();
-                photoImageView.setImageBitmap(photo);
             }
         });
     }
-    //*/
 
     private void setLocationManager(TMapView map) {
         // check permission.
