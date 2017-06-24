@@ -22,6 +22,7 @@ import java.util.ArrayList;
  *  helper.onCreate(db);
  */
 
+// column = -1은 sql 에러를 의미한다.
 class DBManager extends SQLiteOpenHelper {
     private SQLiteDatabase db;
 
@@ -35,6 +36,7 @@ class DBManager extends SQLiteOpenHelper {
     private static final String TOUR_ID     = "tour_id";
 
     private static final String DESCRIPTIONS= "descriptions";
+    private static final String DESCRIPTION = "description";
     private static final String PATH_INDEX  = "path_index";
 
     private static final String TEXTS       = "texts";
@@ -43,14 +45,18 @@ class DBManager extends SQLiteOpenHelper {
 
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
-        initTourID();
+        //initTourID();
     }
 
+    /*
     private int tourID; // 현재 insert 가능한 id.
     private int initTourID() {
+        System.out.println(getNumOfRowInTours());
+        tourID = 0;
         // select해서 최대 _id + 1 한 값이 되어야 함.
         return tourID;
     }
+    */
 
     /*
      * Database가 존재하지 않을 때, 딱 한번 실행됨.
@@ -99,12 +105,20 @@ class DBManager extends SQLiteOpenHelper {
     }
 
     public void insert(TourManager.Tour tour){
-        insert(tour.path, -1);
+        int tourID = getNumOfRowInTours();
+        System.out.println("-----> tour id = " + tourID);
+        insert(tour.path, tourID);
+
+        ArrayList< Tuple<Integer,String> >
+                naviInfoTuples = tour.naviInfos;
+        for(Tuple<Integer,String> naviInfo : naviInfoTuples){
+            insert(naviInfo.left, naviInfo.right, tourID);
+        }
     }
     // 나중에 tour를 저장하는 insert에서 호출된다.
     // insert Path
-    public void insert(ArrayList<TMapPoint> points, int tour_id){
-        for(TMapPoint point : points){
+    public void insert(ArrayList<TMapPoint> path, int tour_id){
+        for(TMapPoint point : path){
             ContentValues values = new ContentValues();
             values.put(LATITUDE, point.getLatitude());
             values.put(LONGITUDE, point.getLongitude());
@@ -113,12 +127,20 @@ class DBManager extends SQLiteOpenHelper {
         }
     }
 
-    public void insert(String str, TMapPoint point){
+    public void insert(String string, TMapPoint point){
         ContentValues values = new ContentValues();
-        values.put(STRING, str);
+        values.put(STRING, string);
         //values.put(LATITUDE, point.getLatitude());
         //values.put(LONGITUDE, point.getLongitude());
         db.insert(TEXTS, null, values);
+    }
+
+    public void insert(int path_index, String naviInfoStr, int tour_id){
+        ContentValues values = new ContentValues();
+        values.put(DESCRIPTION, naviInfoStr);
+        values.put(PATH_INDEX, path_index);
+        values.put(TOUR_ID, tour_id);
+        db.insert(DESCRIPTIONS, null, values);
     }
 
     // TODO: just for test
@@ -153,12 +175,29 @@ class DBManager extends SQLiteOpenHelper {
         }
         c.close();
         }
+
+        {
+        Cursor c = db.query(DESCRIPTIONS, null, null, null, null, null, null, null);
+        while (c.moveToNext()) {
+            String description = c.getString(c.getColumnIndex(DESCRIPTION));
+            int path_index = c.getInt(c.getColumnIndex(PATH_INDEX));
+            int tour_id = c.getInt(c.getColumnIndex(TOUR_ID));
+
+            System.out.println(
+                     TOUR_ID + " = " + tour_id
+            + ", " + PATH_INDEX + " = " + path_index
+            + ", " + DESCRIPTION + " = " + description);
+        }
+        c.close();
+        }
     }
 
-    public void update(){
-    }
-
-    public void delete(){
+    public int getNumOfRowInTours(){
+        String countQuery = "SELECT  * FROM " + TOURS;
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int numOfRow = cursor.getCount();
+        cursor.close();
+        return numOfRow;
     }
 
     // TODO: 만일 table에 맞는 id가 없다면?

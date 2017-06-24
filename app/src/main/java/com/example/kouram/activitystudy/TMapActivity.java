@@ -36,7 +36,7 @@ public class TMapActivity extends AppCompatActivity {
     private TMapView mapView;
     // Create only one manager! it's not singleton!!!
     private RouteManager    routeManager= new RouteManager();
-    private DBManager       dbManager   = new DBManager(this, "test02.db", null, 1); // version은 내 맘대로 함.
+    private DBManager       dbManager   = new DBManager(this, "test05.db", null, 1); // version은 내 맘대로 함.
     private TourManager     tourManager = new TourManager();
 
     private TextToSpeech tts;
@@ -89,9 +89,9 @@ public class TMapActivity extends AppCompatActivity {
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    tts.setLanguage(Locale.KOREAN);
-                }
+            if(status != TextToSpeech.ERROR) {
+                tts.setLanguage(Locale.KOREAN);
+            }
             }
         });
     }
@@ -237,10 +237,11 @@ public class TMapActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // tour = current path + nav info + pictures + some text
                 if(pathOnMap != null && navigationInfos != null){
-                    tourManager.createNewTour();
-                    tourManager.setCurrentEssentialValues(pathOnMap, navigationInfos);
+                    tourManager.createNewTour("tour-name", pathOnMap, navigationInfos);
                     tourManager.saveAndDiscardCurrentTour(dbManager);
                     //pathOnMap = null; // 안내가 끝났을 때 버려야 함.
+                }else{
+                    Toast.makeText(thisContext, "no current tour.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
