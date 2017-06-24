@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".TMapActivity" />
-        <activity android:name=".GetPathActivity"></activity>
+        <activity android:name=".GetPathActivity" />
+        <activity android:name=".PopUpActivity"></activity>
     </application>
 
 </manifest>
