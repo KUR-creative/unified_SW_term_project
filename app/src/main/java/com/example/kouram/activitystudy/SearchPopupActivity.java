@@ -61,34 +61,47 @@ public class SearchPopupActivity extends Activity {
             int count=0;
             @Override
             public void onClick(View view) {
+                System.out.println("0");
                 for(int i=0; i < checkboxArray.size(); i++) {
+                    System.out.println("1");
                     if (checkboxArray.get(i).isChecked()) {
                         result.add(i);
                         ++count;
                     }
                 }
                 if(count > 5) {
+                    System.out.println("-1");
                     System.out.println("너무 많이 선택함");
                     result.clear();
                     count = 0;
                 }
-                //else {
+                else {
                     //System.out.println(result);
                     //finish();
-                //}
+                    Intent outIntent = new Intent();
+                    setResult(RESULT_OK, outIntent);
+                    outIntent.putExtra(GetPathActivity.SEARCH_POPUP, result);
+                    System.out.println("END OF PASS POINT PICK");
+                    System.out.println("is result is empty? : " + result.isEmpty());
+                    finish();
+                }
             }
         });
 
+        /*
         Button confirmBtn = (Button)findViewById(R.id.confirm_btn);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent outIntent = new Intent();
+                setResult(RESULT_OK, outIntent);
                 outIntent.putExtra(GetPathActivity.SEARCH_POPUP, result);
+                System.out.println("END OF PASS POINT PICK");
+                System.out.println("is result is empty? : " + result.isEmpty());
                 finish();
             }
         });
-
+        */
     }
 
     @Override

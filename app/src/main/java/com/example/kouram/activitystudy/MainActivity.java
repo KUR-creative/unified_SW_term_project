@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private final int ttsCallFrequency = 10;
     private long outOfPathCount = 0;
     final MainActivity context = this;
-    private TMapPoint userLocation = new TMapPoint(1,1);
+    private TMapPoint userLocation = null;
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             double lat = location.getLatitude();
@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
     private void initTMap() {
         mapView = (TMapView)findViewById(R.id.map_view);
 
-        mapView.setSKPMapApiKey("d9489600-94c8-3515-972b-6b8a53b3069b");
-        //mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
+        //mapView.setSKPMapApiKey("d9489600-94c8-3515-972b-6b8a53b3069b");
+        mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
         mapView.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         mapView.setIconVisibility(true);
@@ -291,10 +291,10 @@ public class MainActivity extends AppCompatActivity {
         String locationProvider = LocationManager.GPS_PROVIDER;
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
         if (lastKnownLocation != null) {
-            double lng = lastKnownLocation.getLongitude();
             double lat = lastKnownLocation.getLatitude();
-            System.out.println("-------------------> longtitude=" + lng + ", latitude=" + lat);
-            map.setLocationPoint(lng, lat);
+            double lon = lastKnownLocation.getLongitude();
+            userLocation = new TMapPoint(lat, lon);
+            map.setLocationPoint(lon, lat);
         }
     }
 

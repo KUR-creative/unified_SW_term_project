@@ -77,11 +77,16 @@ public class GetPathActivity extends AppCompatActivity {
                     routeManager.add(end);
                 }
                 */
+                System.out.println("-----------------------start---------------------");
                 routeManager.add(start);
                 for(TMapPoint point : passList){
                     routeManager.add(point);
+                    System.out.println("------------>pass point? :" + point.getLatitude()
+                            + "," + point.getLongitude());
                 }
                 routeManager.add(end);
+                System.out.println("-----------------------end---------------------");
+                System.out.println("is empty? : " + passList.isEmpty());
 
             // get path / navi from routeManager.
                 Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > pathNaviData;
@@ -111,7 +116,6 @@ public class GetPathActivity extends AppCompatActivity {
                 int numRow = getIntent().getIntExtra(ROUTE_ID, -1);
                 intent.putExtra(ROUTE_ID, numRow);
                 startActivityForResult(intent, GET_ROUTE_ID);
-
             }
         });
 
@@ -200,8 +204,10 @@ public class GetPathActivity extends AppCompatActivity {
             return;
         }
 
+        System.out.println("WTF?");
         if(requestCode == ACT_GET_RADIUS){
             currentRadius = data.getIntExtra("result", 0);
+            System.out.println("WTF? 1");
         }
         else if(requestCode == GET_ROUTE_ID){
             Intent outIntent = new Intent();
@@ -209,9 +215,11 @@ public class GetPathActivity extends AppCompatActivity {
             outIntent.putExtra(MainActivity.LOADED_ROUTE_ID, routeID);
             setResult(RESULT_OK, outIntent);
             finish();
+            System.out.println("WTF?  2");
         }
         else if(requestCode == SEARCH_RESULT){
             indexList = data.getIntegerArrayListExtra(SEARCH_POPUP);
+            System.out.println("--------->indexList is empty? :" + indexList.isEmpty());
         }
     }
 }

@@ -100,14 +100,14 @@ public class DomThread extends Thread{
 
             //경유지가 있는 경우
             if(pass != null) {
-                System.out.println("sasd");
+                //System.out.println("sasd");
                 String str = new String();
                 int i;
                 for(i=0; i < pass.size()-1; i++){
                     str += WGS84toEPSG3857(pass.get(i)).getLongitude() +","+WGS84toEPSG3857(pass.get(i)).getLatitude()+"_";
                 }
                 str += WGS84toEPSG3857(pass.get(i)).getLongitude() +","+WGS84toEPSG3857(pass.get(i)).getLatitude();
-                System.out.println("str: "+str);
+                //System.out.println("str: "+str);
                 addr += "&searchOption=0";
                 addr += "&passList=" + URLEncoder.encode(str, "UTF-8");
             }
@@ -210,7 +210,7 @@ public class DomThread extends Thread{
         int headIndex=0;
 
         for(int j=0; j < dataCoordinate.size(); j++){
-            System.out.println(j+":"+dataCoordinate.get(j));
+            //System.out.println(j+":"+dataCoordinate.get(j));
             String[] splt = dataCoordinate.get(j).replace(',',' ').trim().split("  | ");
             for (int i=0; i < splt.length;i++){
                 if (i == 0) {
@@ -222,10 +222,10 @@ public class DomThread extends Thread{
         }
 
         for(int i=0; i < pathnav.size(); i++)
-            System.out.println(pathnav.get(i).left + " | " + pathnav.get(i).right);
+            //System.out.println(pathnav.get(i).left + " | " + pathnav.get(i).right);
 
         for(int j=0; j < dataDescription.size(); j++){
-            System.out.println(j+":"+dataDescription.get(j));
+            //System.out.println(j+":"+dataDescription.get(j));
         }
 
 
