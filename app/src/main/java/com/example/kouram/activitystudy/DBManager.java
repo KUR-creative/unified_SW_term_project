@@ -314,5 +314,21 @@ class DBManager extends SQLiteOpenHelper {
 
         return retPics;
     }
+
+    public ArrayList<Tuple<Integer,String>> loadNaviInfos(int _id){
+        ArrayList<Tuple<Integer,String>> naviInfos = new ArrayList<>();
+
+        String[] whereArgs = new String[]{ String.valueOf(_id) };
+        String whereClause = TOUR_ID + "=?";
+        Cursor c = db.query(DESCRIPTIONS, null, whereClause, whereArgs, null, null, null);
+        while(c.moveToNext()){
+            int pathIndex = c.getInt(c.getColumnIndex(PATH_INDEX));
+            String naviStr = c.getString(c.getColumnIndex(DESCRIPTION));
+            naviInfos.add(new Tuple<Integer, String>(pathIndex,naviStr));
+        }
+        c.close();
+
+        return naviInfos;
+    }
 }
 

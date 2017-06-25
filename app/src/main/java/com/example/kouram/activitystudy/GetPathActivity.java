@@ -12,6 +12,8 @@ import com.skp.Tmap.TMapPolyLine;
 
 import java.util.ArrayList;
 
+import static com.example.kouram.activitystudy.MainActivity.ROUTE_ID;
+
 public class GetPathActivity extends AppCompatActivity {
     private final int ACT_GET_RADIUS = 0;
     private RouteManager routeManager= new RouteManager();
@@ -38,7 +40,7 @@ public class GetPathActivity extends AppCompatActivity {
             // get start point = gps point.
                 Intent latLonIntent = getIntent();
                 Tuple<Double,Double> latLon
-                    = (Tuple<Double,Double>) latLonIntent.getSerializableExtra("lat-lon");
+                    = (Tuple<Double,Double>) latLonIntent.getSerializableExtra(MainActivity.LAT_LON);
                         //System.out.println("lat = " + latLon.left + ", lon = " + latLon.right);
                 TMapPoint start = new TMapPoint(latLon.left, latLon.right);
             // get pass list (optional)
@@ -81,14 +83,16 @@ public class GetPathActivity extends AppCompatActivity {
         loadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent outIntent = new Intent();
-                outIntent.putExtra(MainActivity.LOADED_ROUTE_ID, 1); // for test
-                setResult(RESULT_OK, outIntent);
-                finish();
+                Intent intent = new Intent(GetPathActivity.this, HistoryActivity.class);
+                int numRow = getIntent().getIntExtra(ROUTE_ID, -1);
+                intent.putExtra(ROUTE_ID, numRow);
+                startActivityForResult(intent, GET_ROUTE_ID);
+
             }
         });
     }
 
+    private static final int GET_ROUTE_ID = 3;
     private int currentRadius = 0;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -98,7 +102,13 @@ public class GetPathActivity extends AppCompatActivity {
 
         if(requestCode == ACT_GET_RADIUS){
             currentRadius = data.getIntExtra("result", 0);
-            //System.out.println("r = " + currentRadius);
+        }
+        else if(requestCode == GET_ROUTE_ID){
+            Intent outIntent = new Intent();
+            int routeID = data.getIntExtra(MainActivity.ROUTE_ID, -1);
+            outIntent.putExtra(MainActivity.LOADED_ROUTE_ID, routeID);
+            setResult(RESULT_OK, outIntent);
+            finish();
         }
     }
 }

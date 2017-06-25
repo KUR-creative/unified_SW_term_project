@@ -193,12 +193,12 @@ public class MainActivity extends AppCompatActivity {
         getRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
-                //startActivityForResult(intent, ACT_TEST);
                 Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
-                intent.putExtra("lat-lon",
+                intent.putExtra(LAT_LON,
                                 new Tuple<Double,Double>(mapView.getLatitude(),
                                                          mapView.getLongitude()));
+                int numRow = dbManager.getNumOfRowInTours();
+                intent.putExtra(ROUTE_ID, numRow);
                 startActivityForResult(intent, GET_PATH_NAVI_DATA);
             }
         });
@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                int num = dbManager.getNumOfRowInTours();
-                intent.putExtra(ROUTE_ID, num);
+                int numRow = dbManager.getNumOfRowInTours();
+                intent.putExtra(ROUTE_ID, numRow);
                 startActivityForResult(intent, GET_ROUTE_ID);
             }
         });
@@ -548,6 +548,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CROP_FROM_CAMERA   = 2;
     private static final int GET_ROUTE_ID       = 3;
 
+    public static final String LAT_LON  = "lat-lon";
     public static final String PATH_DATA = "path-data";
     public static final String NAVI_DATA = "navi-data";
     public static final String ROUTE_ID  = "route-id";
@@ -608,7 +609,10 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode == GET_PATH_NAVI_DATA){
             int loadedRouteID = data.getIntExtra(LOADED_ROUTE_ID, -2);
 
-            if(loadedRouteID == -1){
+            if(loadedRouteID == -1){ // not loaded route.
+                if(tourManager.hasCurrentWorkingTour()){
+                    tourManager.discardCurrentTour();
+                }
                 ArrayList<Tuple<Double,Double>> pathData;
                 pathData = (ArrayList<Tuple<Double, Double>>)
                         data.getSerializableExtra(PATH_DATA);
@@ -620,9 +624,13 @@ public class MainActivity extends AppCompatActivity {
                 navigationInfos = (ArrayList<Tuple<Integer, String>>)
                         data.getSerializableExtra(NAVI_DATA);
                 tourManager.createNewTour("temp-name", pathOnMap, navigationInfos);
-            }else if(loadedRouteID >= 0){
+            }
+            else if(loadedRouteID >= 0){
                 System.out.println("YOLO");
-            }else{
+                pathOnMap = drawPathAndPictures(loadedRouteID);
+                navigationInfos = dbManager.loadNaviInfos(loadedRouteID);
+            }
+            else{
                 throw new RuntimeException("intent error!");
             }
         }
@@ -632,20 +640,25 @@ public class MainActivity extends AppCompatActivity {
 
             // preview! - 그저 그리기만 할 뿐이다.
             clearMap();
-            TMapPolyLine path = Tools.getPathFrom(dbManager.loadPath(id));
-            displayPathOnMap(path);
-            // and pics... or more..
-
-            ArrayList<TMapPoint> pointList = new ArrayList<>();
-            ArrayList<Bitmap> pics = dbManager.loadLinkedPic(id, pointList);
-
-            int len = pics.size();
-            for(int i = 0; i < len; i++){
-                Bitmap pic = pics.get(i);
-                double lat = pointList.get(i).getLatitude();
-                double lon = pointList.get(i).getLongitude();
-                addMarker(pic, lat, lon, "marker");
-            }
+            drawPathAndPictures(id);
         }
+    }
+
+    private ArrayList<TMapPoint> drawPathAndPictures(int id) {
+        TMapPolyLine path = Tools.getPathFrom(dbManager.loadPath(id));
+        displayPathOnMap(path);
+        // and pics... or more..
+
+        ArrayList<TMapPoint> pointList = new ArrayList<>();
+        ArrayList<Bitmap> pics = dbManager.loadLinkedPic(id, pointList);
+
+        int len = pics.size();
+        for(int i = 0; i < len; i++){
+            Bitmap pic = pics.get(i);
+            double lat = pointList.get(i).getLatitude();
+            double lon = pointList.get(i).getLongitude();
+            addMarker(pic, lat, lon, "marker");
+        }
+        return path.getLinePoint();
     }
 }
