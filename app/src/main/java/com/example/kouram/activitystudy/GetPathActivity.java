@@ -65,6 +65,7 @@ public class GetPathActivity extends AppCompatActivity {
 
             // add to routeManager.
                 routeManager.createNewRoute();
+                /*
                 if(passList.isEmpty()){
                     routeManager.add(start);
                     routeManager.add(end);
@@ -75,6 +76,12 @@ public class GetPathActivity extends AppCompatActivity {
                     }
                     routeManager.add(end);
                 }
+                */
+                routeManager.add(start);
+                for(TMapPoint point : passList){
+                    routeManager.add(point);
+                }
+                routeManager.add(end);
 
             // get path / navi from routeManager.
                 Tuple< TMapPolyLine, ArrayList<Tuple<Integer,String>> > pathNaviData;

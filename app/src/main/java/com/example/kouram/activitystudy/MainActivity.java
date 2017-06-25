@@ -55,11 +55,15 @@ public class MainActivity extends AppCompatActivity {
     private final int ttsCallFrequency = 10;
     private long outOfPathCount = 0;
     final MainActivity context = this;
+    private TMapPoint userLocation = new TMapPoint(1,1);
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-            double lon = location.getLongitude();
             double lat = location.getLatitude();
-            mapView.setLocationPoint(lon, lat);
+            double lon = location.getLongitude();
+            mapView.setLocationPoint(lon, lat); // for view
+
+            userLocation.setLatitude(lat);
+            userLocation.setLongitude(lon);
 
             //TODO: 그래서 path가 discard되면 pathOnMap = null로 해야 함.
             if(pathOnMap != null){
@@ -155,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTMap() {
         mapView = (TMapView)findViewById(R.id.map_view);
-        mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
+
+        mapView.setSKPMapApiKey("d9489600-94c8-3515-972b-6b8a53b3069b");
+        //mapView.setSKPMapApiKey("9553cc22-8104-3088-a882-b90ef2a051d7");
         mapView.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         mapView.setIconVisibility(true);
@@ -195,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, GetPathActivity.class);
                 intent.putExtra(LAT_LON,
-                                new Tuple<Double,Double>(mapView.getLatitude(),
-                                                         mapView.getLongitude()));
+                                new Tuple<Double,Double>(userLocation.getLatitude(),
+                                                         userLocation.getLongitude()));
                 int numRow = dbManager.getNumOfRowInTours();
                 intent.putExtra(ROUTE_ID, numRow);
                 startActivityForResult(intent, GET_PATH_NAVI_DATA);
@@ -564,8 +570,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (extras != null) {
                 Bitmap cropedPhoto = extras.getParcelable("data");
-                double lat = mapView.getLatitude();
-                double lon = mapView.getLongitude();
+                double lat = userLocation.getLatitude();
+                double lon = userLocation.getLongitude();
                 TMapPoint point = new TMapPoint(lat, lon);
                 tourManager.addLinkedPicture(point, cropedPhoto);
             }
