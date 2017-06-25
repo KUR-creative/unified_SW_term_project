@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <tools:LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+
+        android:orientation="vertical"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        tools:context="com.example.kouram.activitystudy.SearchPopupActivity">
+
+<!-- 타이틀바 -->
+
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="#ff7a00"
+        android:gravity="center"
+        android:text="검색결과"
+        android:textColor="#fff"
+        android:textSize="20sp" />
+</LinearLayout>
+<!-- //end 타이틀바 -->
+
+<View
+    android:background="#66bdbdbd"
+    android:layout_width="match_parent"
+    android:layout_height="1dp" />
+
+<!-- 확인 버튼 -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="204dp">
+
+        <LinearLayout
+            android:id="@+id/Linear_Search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/confirm_btn"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:background="#00000000"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="확인"
+        android:textColor="#ff7a00"
+        android:textSize="15sp" />
+</LinearLayout>
+
+<!--// 확인 버튼 -->
+</tools:LinearLayout>

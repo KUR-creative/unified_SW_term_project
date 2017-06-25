@@ -352,36 +352,6 @@ public class MainActivity extends AppCompatActivity {
         return resized;
     }
 
-    // radiusLevel = 1  : 300m 내에서 검색,
-    // radiusLevel = 33 : 9900m 내에서 검색,
-    // radiusLevel = 0  : 서버가 알아서 함.
-    // searchCount는 최대 200개까지.
-    private void searchPOI(String keyword, final int radiusLevel, final int searchCount) {
-        TMapData data = new TMapData();
-        if (!TextUtils.isEmpty(keyword)) {
-            TMapPoint nowLocation = mapView.getLocationPoint();
-            data.findAroundKeywordPOI(nowLocation, keyword, radiusLevel, searchCount, new TMapData.FindAroundKeywordPOIListenerCallback() {
-                @Override
-                public void onFindAroundKeywordPOI(final ArrayList<TMapPOIItem> arrayList) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mapView.removeAllMarkerItem();
-
-                            for (TMapPOIItem poi : arrayList) {
-                                addMarker(poi);
-                                System.out.println(poi.name);
-                            }
-
-                            if (arrayList.size() > 0) {
-                                TMapPOIItem poi = arrayList.get(0);
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    }
 
     //TODO
     private int routeNum = 0;

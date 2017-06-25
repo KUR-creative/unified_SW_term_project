@@ -27,12 +27,17 @@
         <activity
             android:name=".PopUpActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Dialog"></activity>
-        <activity android:name=".HistoryActivity"></activity>
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".HistoryActivity" />
         <activity
             android:name=".PhotoPopUpActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Dialog"></activity>
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".SearchPopupActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
